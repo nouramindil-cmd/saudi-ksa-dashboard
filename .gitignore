@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+node_modules/
+.vercelignore_temp
+vercel.json
+*.xlsx
