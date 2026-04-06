@@ -1969,8 +1969,8 @@ function renderDisability(r) {
 
   html += exportBar('disability');
   html += sourceBox([
-    { name: 'المصدر : هيئة رعاية الأشخاص ذوي الإعاقة', publisher: 'منصة بيانات المفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/51fedc99-df90-4c6f-9a0a-abdb1b3cd7c7/resources' },
-    { name: 'البيانات الديموغرافية للأشخاص ذوي الإعاقة', link: 'https://open.data.gov.sa/ar/datasets/view/b0b9016e-5406-4448-a532-06cfc37a399a/resources' },
+    { name: 'البيانات الديموغرافية لكبار السن من الأشخاص ذوي الإعاقة في الربع الأول 2025', publisher: 'هيئة رعاية الأشخاص ذوي الإعاقة | الناشر: منصة بيانات المفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/51fedc99-df90-4c6f-9a0a-abdb1b3cd7c7/resources' },
+    { name: 'البيانات الديموغرافية للأشخاص ذوي الإعاقة في الربع الأول 2025 (على مستوى المدينة، الحالة الاجتماعية، تصنيف الإعاقة وشدتها، الجنس)', publisher: 'هيئة رعاية الأشخاص ذوي الإعاقة | الناشر: منصة بيانات المفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/b0b9016e-5406-4448-a532-06cfc37a399a/resources' },
     { name: 'التحديث : ربع سنوي' }
   ]);
   html += '</div>';
@@ -2325,8 +2325,8 @@ function renderSecurity(r) {
 
   html += exportBar('security');
   html += sourceBox([
-    { name: 'المصدر : المديرية العامة للدفاع المدني (مراكز الدفاع المدني 2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' },
-    { name: 'المصدر : هيئة الهلال الأحمر السعودي (مراكز الإسعاف 2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
+    { name: 'عدد مراكز الدفاع المدني على مستوى المسمى السكاني للعام 2024 | المصدر : المديرية العامة للدفاع المدني', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' },
+    { name: 'عدد مراكز إسعاف الهلال الأحمر والمسعفين والحالات الإسعافية على مستوى المسمى السكاني للعام 2024 | المصدر : هيئة الهلال الأحمر السعودي', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2421,9 +2421,9 @@ function renderInfrastructure(r) {
 
   html += exportBar('infrastructure');
   html += sourceBox([
-    { name: 'المصدر : وزارة البلديات والإسكان (المراكز الحضرية 2023)', publisher: 'وزارة البلديات والإسكان', link: 'https://momah.gov.sa/ar/open-data?title=%D8%A7%D9%84%D9%85%D8%B1%D8%A7%D9%83%D8%B2&sort_bef_combine=changed_ASC' },
-    { name: 'المصدر : وزارة البلديات والإسكان (الساحات البلدية 2023)', link: 'https://momah.gov.sa/ar/open-data?title=%D8%A7%D9%84%D8%B3%D8%A7%D8%AD%D8%A7%D8%AA&sort_bef_combine=changed_ASC' },
-    { name: 'المصدر : وزارة البلديات والإسكان (الأشجار والزهور 2023)', link: 'https://momah.gov.sa/ar/open-data?title=&sort_bef_combine=changed_DESC&pageNumber=10' }
+    { name: 'المنتزهات | المصدر : وزارة البلديات والإسكان', link: 'https://momah.gov.sa/ar/open-data?title=%D8%A7%D9%84%D9%85%D8%B1%D8%A7%D9%83%D8%B2&sort_bef_combine=changed_ASC' },
+    { name: 'الساحات البلدية نهاية 2023 | المصدر : وزارة البلديات والإسكان', link: 'https://momah.gov.sa/ar/open-data?title=%D8%A7%D9%84%D8%B3%D8%A7%D8%AD%D8%A7%D8%AA&sort_bef_combine=changed_ASC' },
+    { name: 'الأشجار والزهور المزروعة نهاية 2023 | المصدر : وزارة البلديات والإسكان', link: 'https://momah.gov.sa/ar/open-data?title=&sort_bef_combine=changed_DESC&pageNumber=10' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2502,7 +2502,8 @@ function renderTourism(r) {
 
   html += exportBar('tourism');
   html += sourceBox([
-    { name: 'المصدر : وزارة السياحة (الفنادق والشقق المخدومة 2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=124304' }
+    { name: 'عدد الفنادق وغرف الفنادق 2024 | المصدر : وزارة السياحة', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=124304' },
+    { name: 'عدد الشقق المخدومة ومرافق الضيافة الأخرى 2024 | المصدر : وزارة السياحة', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=124304' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2617,8 +2618,8 @@ function renderRealEstate(r) {
 
   html += exportBar('real_estate');
   html += sourceBox([
-    { name: 'المصدر : الهيئة العامة للعقار (أسعار العقارات)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=121920' },
-    { name: 'المصدر : الهيئة العامة للعقار (الإيجارات)', publisher: 'منصة بيانات مفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets?searchValue=%D9%85%D8%A4%D8%B4%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D9%8A%D8%AC%D8%A7%D8%B1' },
+    { name: 'أسعار العقارات | المصدر : الهيئة العامة للعقار', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=121920' },
+    { name: 'أسعار الإيجارات على مستوى المدن | المصدر : الهيئة العامة للعقار', publisher: 'منصة بيانات مفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets?searchValue=%D9%85%D8%A4%D8%B4%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D9%8A%D8%AC%D8%A7%D8%B1' },
     { name: 'التحديث : ربع سنوي' }
   ]);
   html += '</div>';
@@ -2743,7 +2744,7 @@ function renderReligious(r) {
 
   html += exportBar('religious');
   html += sourceBox([
-    { name: 'المصدر : وزارة الشؤون الإسلامية والدعوة والإرشاد (2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
+    { name: 'عدد الجوامع والمساجد ومصليات العيد على مستوى المسمى السكاني للعام 2024 | المصدر : وزارة الشؤون الإسلامية والدعوة والإرشاد', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2818,7 +2819,7 @@ function renderCommerce(r) {
 
   html += exportBar('commerce');
   html += sourceBox([
-    { name: 'المصدر : مجلس الغرف السعودية (2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
+    { name: 'عدد الغرف التجارية وفروعها وعدد اللجان واللجان الفرعية على مستوى المسمى السكاني للعام 2024 | المصدر : مجلس الغرف السعودية', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
