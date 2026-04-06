@@ -1639,7 +1639,7 @@ function renderPopulationHousing(r) {
 
   html += exportBar('population_housing');
   html += sourceBox([
-    { name: 'تعداد السكان والمساكن 2022', publisher: 'الهيئة العامة للإحصاء', link: 'https://www.stats.gov.sa' }
+    { name: 'المصدر : الهيئة العامة للإحصاء 2022' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -1791,8 +1791,8 @@ function renderEducation(r) {
 
   html += exportBar('education');
   html += sourceBox([
-    { name: 'بيانات التعليم العام 2016-2025', publisher: 'وزارة التعليم', link: 'https://departments.moe.gov.sa/Statistics/Educationstatistics/Pages/GEStats.aspx' },
-    { name: 'بيانات 2025', publisher: 'منصة البيانات المفتوحة - سدايا', link: 'https://open.data.gov.sa' }
+    { name: 'المصدر : وزارة التعليم (البيانات من 2016-2024)', link: 'https://departments.moe.gov.sa/Statistics/Educationstatistics/Pages/GEStats.aspx' },
+    { name: 'بيانات 2025 منصة بيانات مفتوحة سدايا', publisher: 'التحديث الدوري : سنوياً' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -1900,7 +1900,8 @@ function renderHealth(r) {
 
   html += exportBar('health');
   html += sourceBox([
-    { name: 'بيانات الرعاية الصحية الأولية 2024', publisher: 'وزارة الصحة', link: 'https://www.moh.gov.sa' }
+    { name: 'المصدر : وزارة الصحة', link: 'https://open.data.gov.sa/ar/datasets/view/6610fd74-8f0d-4296-8e9a-7fade1382def' },
+    { name: 'التحديث الدوري : سنوياً' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -1968,7 +1969,9 @@ function renderDisability(r) {
 
   html += exportBar('disability');
   html += sourceBox([
-    { name: 'بيانات ذوي الإعاقة - الربع الأول 2025', publisher: 'هيئة رعاية الأشخاص ذوي الإعاقة', link: 'https://www.pdc.gov.sa' }
+    { name: 'المصدر : هيئة رعاية الأشخاص ذوي الإعاقة', publisher: 'منصة بيانات المفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/51fedc99-df90-4c6f-9a0a-abdb1b3cd7c7/resources' },
+    { name: 'البيانات الديموغرافية للأشخاص ذوي الإعاقة', link: 'https://open.data.gov.sa/ar/datasets/view/b0b9016e-5406-4448-a532-06cfc37a399a/resources' },
+    { name: 'التحديث : ربع سنوي' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2062,10 +2065,9 @@ function renderLabor(r) {
 
   html += exportBar('labor');
   html += sourceBox([
-    { name: 'بيانات سوق العمل', publisher: 'الهيئة العامة للإحصاء', link: 'https://www.stats.gov.sa' },
-    { name: 'بيانات التأمينات', publisher: 'المؤسسة العامة للتأمينات الاجتماعية', link: 'https://www.gosi.gov.sa' },
-    { name: 'بيانات الموارد البشرية', publisher: 'وزارة الموارد البشرية والتنمية الاجتماعية', link: 'https://www.hrsd.gov.sa' },
-    { name: 'مبادرة قرة', publisher: 'صندوق تنمية الموارد البشرية', link: 'https://www.hrdf.org.sa' }
+    { name: 'المصدر : الهيئة العامة للإحصاء (العاملين)', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=124074' },
+    { name: 'المصدر : صندوق تنمية الموارد البشرية (مراكز قرة)', publisher: 'منصة بيانات المفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/4031f876-6476-49e7-a28d-b2d6380dfc8b' },
+    { name: 'التحديث : ربع سنوي' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2153,8 +2155,10 @@ function renderSports(r) {
 
   html += exportBar('sports');
   html += sourceBox([
-    { name: 'بيانات المرافق الرياضية', publisher: 'وزارة الرياضة', link: 'https://www.mos.gov.sa' },
-    { name: 'بيانات الملاعب البلدية 2023', publisher: 'وزارة الشؤون البلدية والقروية والإسكان', link: 'https://www.momrah.gov.sa' }
+    { name: 'المصدر : وزارة الرياضة (الصالات والمراكز المرخصة)', publisher: 'منصة البيانات المفتوحة سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/beb20c0d-2c9f-49ea-9952-6a41f915c985' },
+    { name: 'المصدر : وزارة الرياضة (المنشآت الرياضية)', publisher: 'منصة البيانات المفتوحة سدايا', link: 'https://open.data.gov.sa/ar/datasets/view/d93d32ab-530b-4dd4-b27f-a42a25341786' },
+    { name: 'المصدر : وزارة البلديات والإسكان (الملاعب البلدية 2023)', link: 'https://momah.gov.sa/ar/open-data?title=%D9%85%D9%84%D8%A7%D8%B9%D8%A8&sort_bef_combine=changed_ASC' },
+    { name: 'تحديث سنوي' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2234,7 +2238,7 @@ function renderNonprofit(r) {
 
   html += exportBar('nonprofit');
   html += sourceBox([
-    { name: 'بيانات الكيانات غير الربحية', publisher: 'المركز الوطني لتنمية القطاع غير الربحي', link: 'https://www.ncnp.gov.sa' }
+    { name: 'المصدر : المركز الوطني لتنمية القطاع غير الربحي' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2321,9 +2325,8 @@ function renderSecurity(r) {
 
   html += exportBar('security');
   html += sourceBox([
-    { name: 'بيانات القضايا 2020', publisher: 'النيابة العامة', link: 'https://www.pp.gov.sa' },
-    { name: 'بيانات الدفاع المدني 2024', publisher: 'المديرية العامة للدفاع المدني', link: 'https://www.998.gov.sa' },
-    { name: 'بيانات الإسعاف 2024', publisher: 'هيئة الهلال الأحمر السعودي', link: 'https://www.srca.org.sa' }
+    { name: 'المصدر : المديرية العامة للدفاع المدني (مراكز الدفاع المدني 2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' },
+    { name: 'المصدر : هيئة الهلال الأحمر السعودي (مراكز الإسعاف 2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2418,7 +2421,9 @@ function renderInfrastructure(r) {
 
   html += exportBar('infrastructure');
   html += sourceBox([
-    { name: 'بيانات البنية التحتية والخدمات البلدية 2023-2024', publisher: 'وزارة الشؤون البلدية والقروية والإسكان', link: 'https://www.momrah.gov.sa' }
+    { name: 'المصدر : وزارة البلديات والإسكان (المراكز الحضرية 2023)', publisher: 'وزارة البلديات والإسكان', link: 'https://momah.gov.sa/ar/open-data?title=%D8%A7%D9%84%D9%85%D8%B1%D8%A7%D9%83%D8%B2&sort_bef_combine=changed_ASC' },
+    { name: 'المصدر : وزارة البلديات والإسكان (الساحات البلدية 2023)', link: 'https://momah.gov.sa/ar/open-data?title=%D8%A7%D9%84%D8%B3%D8%A7%D8%AD%D8%A7%D8%AA&sort_bef_combine=changed_ASC' },
+    { name: 'المصدر : وزارة البلديات والإسكان (الأشجار والزهور 2023)', link: 'https://momah.gov.sa/ar/open-data?title=&sort_bef_combine=changed_DESC&pageNumber=10' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2497,7 +2502,7 @@ function renderTourism(r) {
 
   html += exportBar('tourism');
   html += sourceBox([
-    { name: 'بيانات الفنادق والشقق المخدومة 2024', publisher: 'وزارة السياحة', link: 'https://www.mt.gov.sa' }
+    { name: 'المصدر : وزارة السياحة (الفنادق والشقق المخدومة 2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=124304' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2612,8 +2617,9 @@ function renderRealEstate(r) {
 
   html += exportBar('real_estate');
   html += sourceBox([
-    { name: 'الأرقام القياسية لأسعار العقارات', publisher: 'الهيئة العامة للإحصاء', link: 'https://www.stats.gov.sa' },
-    { name: 'بيانات الإيجارات', publisher: 'الهيئة العامة للعقار', link: 'https://www.rega.gov.sa' }
+    { name: 'المصدر : الهيئة العامة للعقار (أسعار العقارات)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs?tab=436312&category=121920' },
+    { name: 'المصدر : الهيئة العامة للعقار (الإيجارات)', publisher: 'منصة بيانات مفتوحة - سدايا', link: 'https://open.data.gov.sa/ar/datasets?searchValue=%D9%85%D8%A4%D8%B4%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D9%8A%D8%AC%D8%A7%D8%B1' },
+    { name: 'التحديث : ربع سنوي' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2737,7 +2743,7 @@ function renderReligious(r) {
 
   html += exportBar('religious');
   html += sourceBox([
-    { name: 'بيانات الجوامع والمساجد ومصليات العيد 2024', publisher: 'وزارة الشؤون الإسلامية والدعوة والإرشاد', link: 'https://www.moia.gov.sa' }
+    { name: 'المصدر : وزارة الشؤون الإسلامية والدعوة والإرشاد (2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
@@ -2812,8 +2818,7 @@ function renderCommerce(r) {
 
   html += exportBar('commerce');
   html += sourceBox([
-    { name: 'بيانات الغرف التجارية 2024', publisher: 'مجلس الغرف السعودية', link: 'https://www.csc.org.sa' },
-    { name: 'بيانات إحصائية', publisher: 'الهيئة العامة للإحصاء', link: 'https://www.stats.gov.sa' }
+    { name: 'المصدر : مجلس الغرف السعودية (2024)', publisher: 'الهيئة العامة للإحصاء', link: 'https://stats.gov.sa/ar/statistics-tabs/-/categories/124988?tab=436312&category=124988' }
   ]);
   html += '</div>';
   document.getElementById('dataContent').innerHTML = html;
