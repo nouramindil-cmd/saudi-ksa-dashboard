@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة بيانات المملكة العربية السعودية</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="data_embed.js"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
 
@@ -1313,14 +1313,16 @@ function exportCSV(categoryKey) {
       if (p) csv += `${reg},${p.total},${p.saudi},${p.non_saudi},${p.male},${p.female},${h?.total||0}\n`;
     });
   } else if (categoryKey === 'education') {
-    const yr = eduSelectedYear || (catData.available_years ? catData.available_years[catData.available_years.length-1] : '');
+    const allYears = catData.available_years || [];
     csv += `المنطقة,السنة,المدارس,الطلاب,المعلمون,الإداريون,الصفوف\n`;
     const regions = r ? [r] : DATA.regions;
     regions.forEach(reg => {
       const rd = catData.data?.[reg];
       if (rd) {
-        const yd = rd.by_year?.[yr] || {};
-        csv += `${reg},${yr},${yd.schools||0},${yd.students||0},${yd.teachers||0},${yd.admins||0},${yd.classes||0}\n`;
+        allYears.forEach(yr => {
+          const yd = rd.by_year?.[yr] || {};
+          csv += `${reg},${yr},${yd.schools||0},${yd.students||0},${yd.teachers||0},${yd.admins||0},${yd.classes||0}\n`;
+        });
       }
     });
   } else if (categoryKey === 'health') {
@@ -1674,57 +1676,51 @@ function renderPopulationHousing(r) {
   }
 }
 
-let eduSelectedYear = null;
+function getLatestValue(byYear, field, availYears) {
+  for (let i = availYears.length - 1; i >= 0; i--) {
+    const val = byYear[availYears[i]]?.[field];
+    if (val && val > 0) return { value: val, year: availYears[i] };
+  }
+  return { value: 0, year: availYears[availYears.length - 1] };
+}
 
 function renderEducation(r) {
   const cats = DATA.categories.education;
   const eduData = cats.data;
   const availYears = cats.available_years || [];
-  if (!eduSelectedYear && availYears.length > 0) {
-    // Default to latest year that has school data
-    for (let i = availYears.length - 1; i >= 0; i--) {
-      const testR = r || DATA.regions[0];
-      const yd = eduData[testR]?.by_year?.[availYears[i]];
-      if (yd && yd.schools > 0) { eduSelectedYear = availYears[i]; break; }
-    }
-    if (!eduSelectedYear) eduSelectedYear = availYears[availYears.length - 1];
-  }
 
   let html = '<div class="fade-in">';
   html += `<h2 style="font-size:20px;margin-bottom:20px;">📚 التعليم${r ? ' - ' + r : ''}</h2>`;
-
-  // Year slicer
-  html += `<div class="filter-bar">
-    <label>السنة:</label>`;
-  availYears.forEach(y => {
-    html += `<button class="filter-btn${eduSelectedYear===y?' active':''}" onclick="setEduYear('${y}')">${y}</button>`;
-  });
-  html += '</div>';
 
   if (r) {
     const rd = eduData[r];
     if (!rd) { html += '<div class="no-data">لا توجد بيانات لهذه المنطقة</div>'; }
     else {
-      const yd = rd.by_year[eduSelectedYear] || {};
-      const schools = yd.schools || 0;
-      const students = yd.students || 0;
-      const teachers = yd.teachers || 0;
-      const admins = yd.admins || 0;
-      const classes = yd.classes || 0;
+      const latestSchools = getLatestValue(rd.by_year, 'schools', availYears);
+      const latestStudents = getLatestValue(rd.by_year, 'students', availYears);
+      const latestTeachers = getLatestValue(rd.by_year, 'teachers', availYears);
+      const latestAdmins = getLatestValue(rd.by_year, 'admins', availYears);
+      const latestClasses = getLatestValue(rd.by_year, 'classes', availYears);
+
+      const schools = latestSchools.value;
+      const students = latestStudents.value;
+      const teachers = latestTeachers.value;
+      const admins = latestAdmins.value;
+      const classes = latestClasses.value;
 
       html += '<div class="summary-grid">';
-      html += summaryCard('🏫', formatNum(schools), `عدد المدارس (${eduSelectedYear})`);
-      html += summaryCard('📚', formatNum(students), `عدد الطلاب (${eduSelectedYear})`);
-      html += summaryCard('👨‍🏫', formatNum(teachers), `عدد المعلمين (${eduSelectedYear})`);
-      html += summaryCard('👔', formatNum(admins), `عدد الإداريين (${eduSelectedYear})`);
-      if (classes > 0) html += summaryCard('📋', formatNum(classes), `عدد الصفوف (${eduSelectedYear})`);
+      html += summaryCard('🏫', formatNum(schools), `عدد المدارس (${latestSchools.year})`);
+      html += summaryCard('📚', formatNum(students), `عدد الطلاب (${latestStudents.year})`);
+      html += summaryCard('👨‍🏫', formatNum(teachers), `عدد المعلمين (${latestTeachers.year})`);
+      html += summaryCard('👔', formatNum(admins), `عدد الإداريين (${latestAdmins.year})`);
+      if (classes > 0) html += summaryCard('📋', formatNum(classes), `عدد الصفوف (${latestClasses.year})`);
       html += '</div>';
 
       // Insight
       if (schools > 0 && students > 0) {
         const ratio = Math.round(students / schools);
         const teacherRatio = teachers > 0 ? Math.round(students / teachers) : 0;
-        html += insightBox(`تضم ${r} في ${eduSelectedYear}: ${formatNum(schools)} مدرسة و${formatNum(students)} طالب/طالبة و${formatNum(teachers)} معلم/معلمة. بمعدل ${ratio} طالب لكل مدرسة${teacherRatio ? ` و${teacherRatio} طالب لكل معلم` : ''}.`);
+        html += insightBox(`تضم ${r}: ${formatNum(schools)} مدرسة (${latestSchools.year}) و${formatNum(students)} طالب/طالبة (${latestStudents.year}) و${formatNum(teachers)} معلم/معلمة (${latestTeachers.year}). بمعدل ${ratio} طالب لكل مدرسة${teacherRatio ? ` و${teacherRatio} طالب لكل معلم` : ''}.`);
       }
 
       // KPIs
@@ -1741,15 +1737,25 @@ function renderEducation(r) {
       }
       if (kpis.length > 0) html += kpiSection(kpis);
 
-      // Stage breakdown for selected year
-      if (yd.by_stage && Object.keys(yd.by_stage).length > 0) {
+      // Stage breakdown - use latest year with stage data
+      let stageYear = null;
+      let stageData = null;
+      for (let i = availYears.length - 1; i >= 0; i--) {
+        const yd = rd.by_year[availYears[i]];
+        if (yd?.by_stage && Object.keys(yd.by_stage).length > 0) {
+          stageYear = availYears[i];
+          stageData = yd.by_stage;
+          break;
+        }
+      }
+      if (stageData) {
         html += '<div class="detail-grid">';
         html += `<div class="detail-card">
-          <h3>📊 الطلاب حسب المرحلة (${eduSelectedYear})</h3>
+          <h3>📊 الطلاب حسب المرحلة (${stageYear})</h3>
           <div class="chart-container"><canvas id="stageStudentsChart"></canvas></div>
         </div>`;
         html += `<div class="detail-card">
-          <h3>👨‍🏫 المعلمون حسب المرحلة (${eduSelectedYear})</h3>
+          <h3>👨‍🏫 المعلمون حسب المرحلة (${stageYear})</h3>
           <div class="chart-container"><canvas id="stageTeachersChart"></canvas></div>
         </div>`;
         html += '</div>';
@@ -1772,18 +1778,22 @@ function renderEducation(r) {
       html += '</div>';
     }
   } else {
-    // All regions comparison for selected year
+    // All regions comparison - use latest available year for each metric
+    const latestStudentsYear = availYears.slice().reverse().find(y => DATA.regions.some(reg => eduData[reg]?.by_year?.[y]?.students > 0)) || availYears[availYears.length-1];
+    const latestTeachersYear = availYears.slice().reverse().find(y => DATA.regions.some(reg => eduData[reg]?.by_year?.[y]?.teachers > 0)) || availYears[availYears.length-1];
+    const latestSchoolsYear = availYears.slice().reverse().find(y => DATA.regions.some(reg => eduData[reg]?.by_year?.[y]?.schools > 0)) || availYears[availYears.length-1];
+
     html += '<div class="detail-grid">';
     html += `<div class="detail-card full-width">
-      <h3>📊 مقارنة عدد الطلاب حسب المناطق (${eduSelectedYear})</h3>
+      <h3>📊 مقارنة عدد الطلاب حسب المناطق (${latestStudentsYear})</h3>
       <div class="chart-container" style="height:350px"><canvas id="allStudents"></canvas></div>
     </div>`;
     html += `<div class="detail-card full-width">
-      <h3>👨‍🏫 مقارنة عدد المعلمين حسب المناطق (${eduSelectedYear})</h3>
+      <h3>👨‍🏫 مقارنة عدد المعلمين حسب المناطق (${latestTeachersYear})</h3>
       <div class="chart-container" style="height:350px"><canvas id="allTeachers"></canvas></div>
     </div>`;
     html += `<div class="detail-card full-width">
-      <h3>🏫 مقارنة عدد المدارس حسب المناطق (${eduSelectedYear})</h3>
+      <h3>🏫 مقارنة عدد المدارس حسب المناطق (${latestSchoolsYear})</h3>
       <div class="chart-container" style="height:350px"><canvas id="allSchools"></canvas></div>
     </div>`;
     html += '</div>';
@@ -1801,60 +1811,60 @@ function renderEducation(r) {
   if (r) {
     const rd = eduData[r];
     if (rd) {
-      const yd = rd.by_year[eduSelectedYear];
-      // Stage charts
-      if (yd && yd.by_stage) {
-        const stages = Object.keys(yd.by_stage);
+      // Stage charts - use latest year with stage data
+      if (stageData) {
+        const stages = Object.keys(stageData);
         const stColors = ['#3b82f6','#10b981','#f59e0b','#ec4899','#8b5cf6'];
-        makeDoughnut('stageStudentsChart', stages, stages.map(s => yd.by_stage[s].students), stColors);
-        makeDoughnut('stageTeachersChart', stages, stages.map(s => yd.by_stage[s].teachers), stColors);
+        makeDoughnut('stageStudentsChart', stages, stages.map(s => stageData[s].students), stColors);
+        makeDoughnut('stageTeachersChart', stages, stages.map(s => stageData[s].teachers), stColors);
       }
-      // Trend charts
+      // Trend charts - highlight latest year
       if (rd.years_students) {
         const years = Object.keys(rd.years_students).sort();
+        const latestY = years[years.length - 1];
         makeBarChart('studentsChart', years, [{
           label: 'عدد الطلاب', data: years.map(y => rd.years_students[y]),
-          backgroundColor: years.map(y => y === eduSelectedYear ? 'rgba(16,185,129,0.9)' : 'rgba(16,185,129,0.4)'),
+          backgroundColor: years.map(y => y === latestY ? 'rgba(16,185,129,0.9)' : 'rgba(16,185,129,0.4)'),
           borderColor: '#10b981', borderWidth: 1, borderRadius: 4
         }]);
       }
       if (rd.years_teachers) {
         const years = Object.keys(rd.years_teachers).sort();
+        const latestY = years[years.length - 1];
         makeBarChart('teachersChart', years, [{
           label: 'عدد المعلمين', data: years.map(y => rd.years_teachers[y]),
-          backgroundColor: years.map(y => y === eduSelectedYear ? 'rgba(245,158,11,0.9)' : 'rgba(245,158,11,0.4)'),
+          backgroundColor: years.map(y => y === latestY ? 'rgba(245,158,11,0.9)' : 'rgba(245,158,11,0.4)'),
           borderColor: '#f59e0b', borderWidth: 1, borderRadius: 4
         }]);
       }
       if (rd.years_schools) {
         const years = Object.keys(rd.years_schools).sort();
+        const latestY = years[years.length - 1];
         makeBarChart('schoolsChart', years, [{
           label: 'عدد المدارس', data: years.map(y => rd.years_schools[y]),
-          backgroundColor: years.map(y => y === eduSelectedYear ? 'rgba(59,130,246,0.9)' : 'rgba(59,130,246,0.4)'),
+          backgroundColor: years.map(y => y === latestY ? 'rgba(59,130,246,0.9)' : 'rgba(59,130,246,0.4)'),
           borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4
         }]);
       }
     }
   } else {
-    const yr = eduSelectedYear;
+    const latestStudentsYear = availYears.slice().reverse().find(y => DATA.regions.some(reg => eduData[reg]?.by_year?.[y]?.students > 0)) || availYears[availYears.length-1];
+    const latestTeachersYear = availYears.slice().reverse().find(y => DATA.regions.some(reg => eduData[reg]?.by_year?.[y]?.teachers > 0)) || availYears[availYears.length-1];
+    const latestSchoolsYear = availYears.slice().reverse().find(y => DATA.regions.some(reg => eduData[reg]?.by_year?.[y]?.schools > 0)) || availYears[availYears.length-1];
+
     makeBarChart('allStudents', DATA.regions, [{
-      label: 'عدد الطلاب', data: DATA.regions.map(reg => eduData[reg]?.by_year?.[yr]?.students || 0),
+      label: 'عدد الطلاب', data: DATA.regions.map(reg => eduData[reg]?.by_year?.[latestStudentsYear]?.students || 0),
       backgroundColor: 'rgba(16,185,129,0.6)', borderColor: '#10b981', borderWidth: 1, borderRadius: 6
     }]);
     makeBarChart('allTeachers', DATA.regions, [{
-      label: 'عدد المعلمين', data: DATA.regions.map(reg => eduData[reg]?.by_year?.[yr]?.teachers || 0),
+      label: 'عدد المعلمين', data: DATA.regions.map(reg => eduData[reg]?.by_year?.[latestTeachersYear]?.teachers || 0),
       backgroundColor: 'rgba(245,158,11,0.6)', borderColor: '#f59e0b', borderWidth: 1, borderRadius: 6
     }]);
     makeBarChart('allSchools', DATA.regions, [{
-      label: 'عدد المدارس', data: DATA.regions.map(reg => eduData[reg]?.by_year?.[yr]?.schools || 0),
+      label: 'عدد المدارس', data: DATA.regions.map(reg => eduData[reg]?.by_year?.[latestSchoolsYear]?.schools || 0),
       backgroundColor: 'rgba(59,130,246,0.6)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 6
     }]);
   }
-}
-
-function setEduYear(y) {
-  eduSelectedYear = y;
-  renderData();
 }
 
 function renderHealth(r) {
