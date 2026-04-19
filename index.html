@@ -1818,9 +1818,9 @@ function renderEducation(r) {
         makeDoughnut('stageStudentsChart', stages, stages.map(s => stageData[s].students), stColors);
         makeDoughnut('stageTeachersChart', stages, stages.map(s => stageData[s].teachers), stColors);
       }
-      // Trend charts - highlight latest year
+      // Trend charts - only show years with actual data
       if (rd.years_students) {
-        const years = Object.keys(rd.years_students).sort();
+        const years = Object.keys(rd.years_students).sort().filter(y => rd.years_students[y] > 0);
         const latestY = years[years.length - 1];
         makeBarChart('studentsChart', years, [{
           label: 'عدد الطلاب', data: years.map(y => rd.years_students[y]),
@@ -1829,7 +1829,7 @@ function renderEducation(r) {
         }]);
       }
       if (rd.years_teachers) {
-        const years = Object.keys(rd.years_teachers).sort();
+        const years = Object.keys(rd.years_teachers).sort().filter(y => rd.years_teachers[y] > 0);
         const latestY = years[years.length - 1];
         makeBarChart('teachersChart', years, [{
           label: 'عدد المعلمين', data: years.map(y => rd.years_teachers[y]),
@@ -1838,7 +1838,7 @@ function renderEducation(r) {
         }]);
       }
       if (rd.years_schools) {
-        const years = Object.keys(rd.years_schools).sort();
+        const years = Object.keys(rd.years_schools).sort().filter(y => rd.years_schools[y] > 0);
         const latestY = years[years.length - 1];
         makeBarChart('schoolsChart', years, [{
           label: 'عدد المدارس', data: years.map(y => rd.years_schools[y]),
