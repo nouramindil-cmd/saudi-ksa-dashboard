@@ -1811,12 +1811,20 @@ function renderEducation(r) {
   if (r) {
     const rd = eduData[r];
     if (rd) {
-      // Stage charts - use latest year with stage data
-      if (stageData) {
-        const stages = Object.keys(stageData);
+      // Stage charts - find latest year with stage data
+      let stageDataForChart = null;
+      for (let i = availYears.length - 1; i >= 0; i--) {
+        const yd = rd.by_year[availYears[i]];
+        if (yd?.by_stage && Object.keys(yd.by_stage).length > 0) {
+          stageDataForChart = yd.by_stage;
+          break;
+        }
+      }
+      if (stageDataForChart) {
+        const stages = Object.keys(stageDataForChart);
         const stColors = ['#3b82f6','#10b981','#f59e0b','#ec4899','#8b5cf6'];
-        makeDoughnut('stageStudentsChart', stages, stages.map(s => stageData[s].students), stColors);
-        makeDoughnut('stageTeachersChart', stages, stages.map(s => stageData[s].teachers), stColors);
+        makeDoughnut('stageStudentsChart', stages, stages.map(s => stageDataForChart[s].students), stColors);
+        makeDoughnut('stageTeachersChart', stages, stages.map(s => stageDataForChart[s].teachers), stColors);
       }
       // Trend charts - only show years with actual data
       if (rd.years_students) {
