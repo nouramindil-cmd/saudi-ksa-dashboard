@@ -284,7 +284,7 @@ def main():
                        for k, v in man["indicators"].items()}
     (DATA / "dashboard.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     ch_path = DATA / "changes.json"
-    allch = json.loads(ch_path.read_text(encoding="utf-8")) if ch_path.exists() else []
+    allch = json.loads(ch_path.read_text(encoding="utf-8-sig")) if ch_path.exists() else []
     allch = (changes + allch)[:500]
     ch_path.write_text(json.dumps(allch, ensure_ascii=False, indent=1), encoding="utf-8")
     ok = sum(1 for x in out["log"] if x["status"] == "ok")
