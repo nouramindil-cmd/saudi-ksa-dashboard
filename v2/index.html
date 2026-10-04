@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>نبض المناطق</title>
+<meta name="description" content="مؤشرات مناطق المملكة الثلاث عشرة من مصادرها الرسمية، تُجمع آلياً كل يوم مع تاريخ المصدر لكل رقم">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f3f2ee; --surface:#fcfcfb; --surface-2:#ebe9e2; --ink:#0b0b0b; --ink-2:#52514e; --ink-3:#8a8880; --line:#dcdad2;
+  --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a; --series-4:#eda100; --series-7:#4a3aa7;
+  --good:#008300; --warn:#b36b00; --bad:#c22f2e; --head:#0f1b2d; --head-ink:#ffffff; --head-ink-2:#b9c3d3;
+  --radius:14px; --gap:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --ink:#ffffff; --ink-2:#c3c2b7; --ink-3:#8f8e86; --line:#32312e;
+    --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500; --series-7:#9085e9;
+    --good:#4fbf4f; --warn:#e3a33a; --bad:#e66767; --head:#0b1320; --head-ink:#ffffff; --head-ink-2:#aeb8c8;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --ink:#ffffff; --ink-2:#c3c2b7; --ink-3:#8f8e86; --line:#32312e;
+  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500; --series-7:#9085e9;
+  --good:#4fbf4f; --warn:#e3a33a; --bad:#e66767; --head:#0b1320; --head-ink:#ffffff; --head-ink-2:#aeb8c8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+
+/* ---------- header ---------- */
+header{background:var(--head);color:var(--head-ink);padding:28px 0 22px}
+header .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+header h1{margin:0;font-size:clamp(28px,5vw,46px);font-weight:700;letter-spacing:-0.5px;line-height:1.15}
+header h1 small{display:block;font-size:15px;font-weight:400;color:var(--head-ink-2);margin-top:6px}
+.pulse{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:22px}
+.pulse div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px}
+.pulse b{display:block;font-size:26px;font-weight:700;line-height:1.1}
+.pulse span{font-size:12.5px;color:var(--head-ink-2)}
+.tog{background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--head-ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit;font-size:13px}
+
+/* ---------- layout ---------- */
+.layout{display:grid;grid-template-columns:230px 1fr;gap:24px;padding:24px 0 64px}
+nav.side{position:sticky;top:12px;align-self:start;display:flex;flex-direction:column;gap:4px}
+nav.side a{display:flex;justify-content:space-between;align-items:center;text-decoration:none;padding:9px 12px;border-radius:10px;color:var(--ink-2);font-size:14px}
+nav.side a:hover{background:var(--surface-2);color:var(--ink)}
+nav.side a.on{background:var(--ink);color:var(--bg)}
+nav.side a i{font-style:normal;font-size:11px;color:var(--ink-3)}
+nav.side a.on i{color:var(--bg)}
+nav.side .grp{font-size:11.5px;color:var(--ink-3);margin:12px 12px 2px;letter-spacing:.3px}
+main{min-width:0}
+
+/* ---------- controls ---------- */
+.ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.ctrl select,.ctrl input{font:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--surface)}
+
+/* ---------- section ---------- */
+section.cat{margin-bottom:40px;scroll-margin-top:12px}
+section.cat h2{margin:0 0 4px;font-size:24px;font-weight:700;display:flex;align-items:baseline;gap:10px}
+section.cat .sub{color:var(--ink-2);font-size:13.5px;margin-bottom:14px;display:flex;gap:14px;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--gap)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px 12px;cursor:pointer;position:relative;transition:transform .12s}
+.card:hover{transform:translateY(-2px)}
+.card.on{outline:2px solid var(--series-1);outline-offset:-2px}
+.card .k{font-size:13px;color:var(--ink-2);min-height:40px}
+.card .v{font-size:30px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.card .r{font-size:12.5px;color:var(--ink-3)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);margin-top:8px}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.badge.fresh::before{background:var(--good)} .badge.year::before{background:var(--series-1)} .badge.old::before{background:var(--warn)} .badge.static::before{background:var(--ink-3)}
+
+/* ---------- chart panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 10px;margin-top:16px}
+.panel .ph{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.panel h3{margin:0;font-size:16px;font-weight:600}
+.panel .meta{font-size:12.5px;color:var(--ink-2)}
+.panel .meta a{color:var(--series-1);text-decoration:none}
+.chart-box{position:relative;height:420px;margin-top:8px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl th{color:var(--ink-2);font-weight:500}
+.tbl td.n{text-align:left;direction:ltr}
+details.base{margin-top:12px}
+details.base summary{cursor:pointer;color:var(--ink-2);font-size:13.5px}
+details.base .tbl{font-size:13px}
+.empty{color:var(--ink-3);font-size:13.5px;padding:14px 0}
+
+/* ---------- changes ---------- */
+.changes{display:grid;gap:8px}
+.chg{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px}
+.chg time{color:var(--ink-3);font-size:12.5px;direction:ltr;text-align:right}
+.chg b{font-weight:600}
+.chg span{color:var(--ink-2);font-size:13px}
+
+/* ---------- census ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi b{display:block;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12.5px;color:var(--ink-2)}
+
+footer{color:var(--ink-3);font-size:12.5px;padding:24px 0 40px;border-top:1px solid var(--line)}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  nav.side{position:static;flex-direction:row;flex-wrap:wrap;gap:6px}
+  nav.side .grp{display:none}
+  nav.side a{padding:6px 10px;font-size:13px;border:1px solid var(--line)}
+  .chart-box{height:460px}
+  .chg{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <h1>نبض المناطق<small>مؤشرات مناطق المملكة الثلاث عشرة من مصادرها الرسمية، تُفحص آلياً كل يوم. كل رقم يحمل تاريخ مصدره.</small></h1>
+      <button class="tog" id="themeBtn" type="button">الوضع الداكن</button>
+    </div>
+    <div class="pulse" id="pulse"></div>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="side" id="nav"></nav>
+  <main id="main">
+    <div class="ctrl">
+      <label for="regionSel">المنطقة:</label>
+      <select id="regionSel"><option value="">كل المناطق</option></select>
+      <span class="chip" id="regionHint">اختاري منطقة لتمييزها في كل الرسوم</span>
+    </div>
+    <div id="sections"><p class="empty">يحمّل البيانات…</p></div>
+  </main>
+</div>
+<footer><div class="wrap" id="foot"></div></footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => n == null ? "—" : (Math.abs(n) >= 1e6 ? (n/1e6).toLocaleString("ar-SA",{maximumFractionDigits:2})+" مليون" : n.toLocaleString("ar-SA",{maximumFractionDigits:2}));
+const fmtAx = n => Math.abs(n)>=1e6 ? (n/1e6).toFixed(1)+"م" : Math.abs(n)>=1e3 ? (n/1e3).toFixed(0)+"ألف" : n;
+const dstr = s => s ? new Date(s).toLocaleDateString("ar-SA-u-nu-latn",{year:"numeric",month:"short",day:"numeric"}) : "—";
+let DATA, CHANGES=[], region="", charts={};
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// --- theme toggle
+const themeBtn=$("#themeBtn");
+function applyTheme(t){ if(t) document.documentElement.setAttribute("data-theme",t); else document.documentElement.removeAttribute("data-theme");
+  const dark = t==="dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches);
+  themeBtn.textContent = dark ? "الوضع الفاتح" : "الوضع الداكن"; Object.values(charts).forEach(c=>c.destroy()); charts={}; if(DATA) render(); }
+try{ applyTheme(localStorage.getItem("theme")||""); }catch(e){ applyTheme(""); }
+themeBtn.onclick=()=>{ const cur=document.documentElement.getAttribute("data-theme"); const dark = cur==="dark" || (!cur && matchMedia("(prefers-color-scheme: dark)").matches);
+  const next = dark?"light":"dark"; try{localStorage.setItem("theme",next)}catch(e){} applyTheme(next); };
+
+// --- freshness
+function freshClass(d){ if(!d) return "static"; const days=(Date.now()-new Date(d))/864e5; return days<=120?"fresh":days<=400?"year":"old"; }
+function freshWord(d){ return {fresh:"محدّث حديثاً",year:"خلال السنة",old:"يحتاج تحديثاً عند المصدر",static:"ثابت"}[freshClass(d)]; }
+
+Promise.all([fetch("data/dashboard.json").then(r=>r.json()), fetch("data/changes.json").then(r=>r.ok?r.json():[]).catch(()=>[])])
+.then(([d,c])=>{ DATA=d; CHANGES=c; init(); render(); });
+
+function init(){
+  const sel=$("#regionSel"); DATA.regions.forEach(r=>{const o=document.createElement("option");o.value=r;o.textContent=r;sel.appendChild(o);});
+  sel.onchange=()=>{region=sel.value; $("#regionHint").textContent = region? `مميّز: ${region}` : "اختاري منطقة لتمييزها في كل الرسوم"; render();};
+  // header pulse
+  const cats=Object.values(DATA.categories); const metrics=cats.flatMap(c=>c.metrics);
+  const dates=metrics.map(m=>m.source_date).filter(Boolean).sort(); const checked=metrics.map(m=>m.checked_at).filter(Boolean).sort();
+  const fresh=metrics.filter(m=>freshClass(m.source_date)==="fresh").length;
+  $("#pulse").innerHTML = [
+    [cats.length+Object.keys(DATA.census).length,"قسماً"],
+    [metrics.length,"مقياساً بالمناطق"],
+    [fresh,"مقياساً تحدّث خلال 4 أشهر"],
+    [dstr(dates.at(-1)),"أحدث تاريخ مصدر"],
+    [dstr(checked.at(-1)),"آخر فحص آلي للمصادر"],
+    [CHANGES.length,"تغيّراً مرصوداً"]
+  ].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join("");
+  // nav
+  const nav=$("#nav"); nav.innerHTML = `<div class="grp">مؤشرات حيّة</div>` +
+    Object.entries(DATA.categories).map(([k,c])=>`<a href="#c-${k}">${c.icon} ${c.name}<i>${c.metrics.length}</i></a>`).join("") +
+    `<a href="#changes">🔔 ما الذي تغيّر<i>${CHANGES.length}</i></a><div class="grp">تعداد 2022 (ثابت)</div>` +
+    Object.entries(DATA.census).map(([k,c])=>`<a href="#c-${k}">${c.icon||""} ${c.name}</a>`).join("");
+  nav.onclick=e=>{ const a=e.target.closest("a"); if(!a) return; nav.querySelectorAll("a").forEach(x=>x.classList.remove("on")); a.classList.add("on"); };
+  $("#foot").innerHTML = `بُني آلياً في ${dstr(DATA.built_at)}. المصادر: ${Object.values(DATA.sources).map(s=>s.name).join(" · ")}. بيانات التعداد لقطة ثابتة من تعداد 2022.`;
+}
+
+function render(){
+  const root=$("#sections"); root.innerHTML="";
+  for(const [k,c] of Object.entries(DATA.categories)) root.appendChild(catSection(k,c));
+  root.appendChild(changesSection());
+  for(const [k,c] of Object.entries(DATA.census)) root.appendChild(censusSection(k,c));
+}
+
+function catSection(key,c){
+  const s=document.createElement("section"); s.className="cat"; s.id="c-"+key;
+  const f=c.freshness||{};
+  s.innerHTML = `<h2>${c.icon} ${c.name}</h2>
+    <div class="sub"><span>${c.metrics.length} مقياساً</span><span>أحدث مصدر: ${dstr(f.latest_source_date)}</span><span>آخر فحص: ${dstr(f.last_checked)}</span></div>`;
+  if(!c.metrics.length){ s.insertAdjacentHTML("beforeend",`<p class="empty">لا مصدر آلي لهذا القسم بعد — البيانات السابقة أدناه كما هي.</p>`); }
+  else{
+    const cards=document.createElement("div"); cards.className="cards";
+    c.metrics.forEach((m,i)=>{
+      const v = region ? m.values[region] : m.total;
+      cards.insertAdjacentHTML("beforeend",`<div class="card ${i===0?"on":""}" data-i="${i}">
+        <div class="k">${m.name}</div><div class="v">${fmt(v)}</div>
+        <div class="r">${region||"إجمالي المناطق"} · ${m.period||""}</div>
+        <span class="badge ${freshClass(m.source_date)}" title="${freshWord(m.source_date)}">${dstr(m.source_date)}</span></div>`);
+    });
+    s.appendChild(cards);
+    const panel=document.createElement("div"); panel.className="panel"; s.appendChild(panel);
+    const draw=i=>{ cards.querySelectorAll(".card").forEach(x=>x.classList.toggle("on",+x.dataset.i===i)); chartPanel(panel,c.metrics[i],key+i); };
+    cards.onclick=e=>{ const el=e.target.closest(".card"); if(el) draw(+el.dataset.i); };
+    draw(0);
+  }
+  // baseline (old dashboard data) — nothing is dropped
+  const b=baselineTable(c.baseline);
+  if(b) s.insertAdjacentHTML("beforeend",`<details class="base"><summary>البيانات السابقة من النسخة القديمة (${b.rows} صفاً) — تبقى مرجعاً</summary>${b.html}</details>`);
+  return s;
+}
+
+function chartPanel(panel,m,id){
+  const regs=[...DATA.regions].sort((a,b)=>(m.values[b]||0)-(m.values[a]||0));
+  const vals=regs.map(r=>m.values[r]??null);
+  const total = m.key==="repi" ? null : m.total;
+  panel.innerHTML=`<div class="ph"><h3>${m.name} حسب المنطقة</h3>
+    <div class="meta">${m.period?`الفترة: ${m.period} · `:""}المصدر: ${m.source} · تاريخ المصدر ${dstr(m.source_date)} · ${freshWord(m.source_date)}${m.source_url?` · <a href="${m.source_url}" target="_blank" rel="noopener">الملف الأصلي ↗</a>`:""}</div></div>
+    <div class="chart-box"><canvas id="ch-${id}"></canvas></div>
+    ${m.series?`<div class="chart-box" style="height:300px"><canvas id="ln-${id}"></canvas></div>`:""}
+    <details><summary style="cursor:pointer;color:var(--ink-2);font-size:13px">جدول القيم</summary><table class="tbl"><tr><th>المنطقة</th><th>القيمة</th>${total?"<th>الحصة</th>":""}</tr>
+    ${regs.map(r=>`<tr><td>${r}</td><td class="n">${fmt(m.values[r])}</td>${total?`<td class="n">${total?((m.values[r]||0)/total*100).toFixed(1)+"%":""}</td>`:""}</tr>`).join("")}</table></details>`;
+  const c1=css("--series-1"), c2=css("--series-2"), ink2=css("--ink-2"), line=css("--line");
+  if(charts[id]) charts[id].destroy();
+  charts[id]=new Chart(panel.querySelector("#ch-"+id),{type:"bar",data:{labels:regs,datasets:[{data:vals,backgroundColor:regs.map(r=>r===region?c2:c1),borderRadius:4,borderSkipped:"start",barThickness:18,maxBarThickness:22}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{rtl:true,callbacks:{label:x=>` ${fmt(x.raw)}`+(total?` (${(x.raw/total*100).toFixed(1)}%)`:"")}}},
+      scales:{x:{grid:{color:line},ticks:{color:ink2,callback:v=>fmtAx(v)},border:{display:false}},y:{grid:{display:false},ticks:{color:ink2,font:{family:"IBM Plex Sans Arabic",size:13}},border:{display:false}}}}});
+  if(m.series){
+    const show = region ? [region] : ["الرياض","مكة المكرمة","المنطقة الشرقية"];
+    const cols=[c1,c2,css("--series-3")];
+    const labels=(m.series[show[0]]||[]).map(p=>p.period);
+    charts["ln"+id]=new Chart(panel.querySelector("#ln-"+id),{type:"line",data:{labels,datasets:show.map((r,i)=>({label:r,data:(m.series[r]||[]).map(p=>p.value),borderColor:cols[i],backgroundColor:cols[i],borderWidth:2,pointRadius:3,tension:.2}))},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:show.length>1,rtl:true,labels:{color:ink2}},tooltip:{rtl:true}},
+        scales:{x:{grid:{display:false},ticks:{color:ink2,maxTicksLimit:10}},y:{grid:{color:line},ticks:{color:ink2},border:{display:false}}}}});
+  }
+}
+
+// --- generic baseline renderer: any {region:{...}} or {region:number} shape becomes a table
+function baselineTable(b){
+  if(!b) return null; let rows=[], html="";
+  for(const [sub,obj] of Object.entries(b)){
+    if(Array.isArray(obj)||typeof obj!=="object"||!obj) continue;
+    const keys=Object.keys(obj); const isReg=keys.some(k=>DATA.regions.includes(k)); if(!isReg) continue;
+    const first=obj[keys.find(k=>DATA.regions.includes(k))];
+    const cols = typeof first==="number" ? ["القيمة"] : Object.keys(first).filter(k=>typeof first[k]==="number" || (first[k]&&typeof first[k]==="object"&&typeof first[k].total==="number"&&k==="total"));
+    if(typeof first==="object" && first && first.total && typeof first.total==="object") cols.push("total");
+    if(!cols.length) continue;
+    html+=`<p style="margin:10px 0 2px;font-size:13.5px;font-weight:600">${sub}</p><table class="tbl"><tr><th>المنطقة</th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+    for(const r of DATA.regions){ const v=obj[r]; if(v==null) continue; rows.push(1);
+      html+=`<tr><td>${r}</td>${cols.map(c=>{ let x = typeof v==="number"? v : v[c]; if(x&&typeof x==="object") x=Object.values(x).filter(n=>typeof n==="number").reduce((a,b)=>a+b,0); return `<td class="n">${typeof x==="number"?fmt(x):"—"}</td>`;}).join("")}</tr>`; }
+    html+="</table>";
+  }
+  return rows.length? {rows:rows.length,html} : null;
+}
+
+function changesSection(){
+  const s=document.createElement("section"); s.className="cat"; s.id="changes";
+  s.innerHTML=`<h2>🔔 ما الذي تغيّر</h2><div class="sub"><span>كل مرة يرصد الجامع رقماً مختلفاً عند المصدر يُسجَّل هنا</span></div>`;
+  if(!CHANGES.length){ s.insertAdjacentHTML("beforeend",`<p class="empty">لا تغيّرات مرصودة بعد. هذا أول بناء؛ من الغد تُقارن القيم يومياً مع المصادر.</p>`); return s; }
+  s.insertAdjacentHTML("beforeend",`<div class="changes">${CHANGES.slice(0,60).map(c=>`<div class="chg"><time>${dstr(c.at)}</time><div><b>${DATA.categories[c.category]?.name||c.category}</b> — ${c.name}<br><span>${c.regions_changed} منطقة تغيّرت قيمتها · الفترة ${c.period||"—"} · تاريخ المصدر ${dstr(c.source_date)}</span></div></div>`).join("")}</div>`);
+  return s;
+}
+
+function censusSection(key,c){
+  const s=document.createElement("section"); s.className="cat"; s.id="c-"+key;
+  s.innerHTML=`<h2>${c.icon||""} ${c.name}</h2><div class="sub"><span>تعداد السعودية 2022 — لقطة ثابتة حتى التعداد القادم</span><span class="badge static">ثابت</span></div>`;
+  if(c.kpis){ s.insertAdjacentHTML("beforeend",`<div class="kpis">${Object.entries(c.kpis).map(([k,v])=>`<div class="kpi"><b>${typeof v==="number"?fmt(v):v}</b><span>${k}</span></div>`).join("")}</div>`); }
+  const b=baselineTable(c); if(b) s.insertAdjacentHTML("beforeend",b.html);
+  // region bars for the first region→number map
+  for(const [sub,obj] of Object.entries(c)){
+    if(!obj||typeof obj!=="object"||Array.isArray(obj)) continue;
+    const vals=DATA.regions.map(r=>typeof obj[r]==="number"?obj[r]:(obj[r]&&typeof obj[r].total==="number"?obj[r].total:(obj[r]&&typeof obj[r].population==="number"?obj[r].population:null)));
+    if(vals.filter(v=>v!=null).length<10) continue;
+    const id="cz"+key; s.insertAdjacentHTML("beforeend",`<div class="panel"><div class="ph"><h3>${sub} حسب المنطقة</h3></div><div class="chart-box" style="height:380px"><canvas id="ch-${id}"></canvas></div></div>`);
+    const regs=[...DATA.regions].map((r,i)=>[r,vals[i]]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]);
+    const c1=css("--series-7"), c2=css("--series-2"), ink2=css("--ink-2"), line=css("--line");
+    charts[id]=new Chart(s.querySelector("#ch-"+id),{type:"bar",data:{labels:regs.map(x=>x[0]),datasets:[{data:regs.map(x=>x[1]),backgroundColor:regs.map(x=>x[0]===region?c2:c1),borderRadius:4,borderSkipped:"start",barThickness:18}]},
+      options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{rtl:true,callbacks:{label:x=>` ${fmt(x.raw)}`}}},scales:{x:{grid:{color:line},ticks:{color:ink2,callback:v=>fmtAx(v)},border:{display:false}},y:{grid:{display:false},ticks:{color:ink2,font:{size:13}},border:{display:false}}}}});
+    break;
+  }
+  return s;
+}
+</script>
+</body>
+</html>

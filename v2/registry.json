@@ -1,0 +1,38 @@
+{
+  "regions": ["الرياض", "مكة المكرمة", "المدينة المنورة", "القصيم", "المنطقة الشرقية", "عسير", "تبوك", "حائل", "الحدود الشمالية", "جازان", "نجران", "الباحة", "الجوف"],
+  "sources": {
+    "gastat_pub": {"name": "الهيئة العامة للإحصاء – النشرات (Excel)", "runner": "cloud"},
+    "gastat_api": {"name": "الهيئة العامة للإحصاء – api.stats.gov.sa (يحتاج apikey)", "runner": "cloud"},
+    "momah": {"name": "وزارة البلديات والإسكان – البيانات المفتوحة", "runner": "cloud"},
+    "odp": {"name": "منصة البيانات المفتوحة (سدايا)", "runner": "local"},
+    "census_tableau": {"name": "تعداد السعودية 2022 – لوحات Tableau", "runner": "local"}
+  },
+  "indicators": {
+    "labor_registry": {"category": "labor", "name": "العاملون والمنشآت حسب المناطق (سجلية)", "source": "gastat_pub", "category_id": "124074", "match": "Register.based.*Labou?r.*Market"},
+    "labor_market": {"category": "labor", "name": "سوق العمل (مسح القوى العاملة)", "source": "gastat_pub", "category_id": "417515", "match": "Labor.Market.Statistics|LM_tables"},
+    "tourism_establishments": {"category": "tourism", "name": "الفنادق والشقق المخدومة حسب المناطق", "source": "gastat_pub", "category_id": "124304", "match": "Tourism.Establishments"},
+    "real_estate_repi": {"category": "real_estate", "name": "الرقم القياسي لأسعار العقارات", "source": "gastat_pub", "category_id": "121920", "match": "REPI"},
+    "services_statistics": {"category": "education|security|religious|commerce|tourism|sports|infrastructure", "name": "إحصاءات الخدمات السنوية (المدارس، الدفاع المدني، الهلال الأحمر، المساجد، الغرف التجارية، الفنادق، المنشآت الرياضية، البلديات) حسب المناطق", "source": "gastat_pub", "category_id": "124988", "match": "Services_Statistics", "sheets": {"1-1..1-6": "التعليم", "2-1": "الدفاع المدني", "2-2": "الهلال الأحمر", "3-5": "المساجد", "4-1": "الغرف التجارية", "5-1": "الفنادق", "5-2": "الشقق المخدومة", "5-5": "المنشآت الرياضية", "6-2": "الأمانات والبلديات"}},
+    "education_survey": {"category": "education", "name": "إحصاءات التعليم والتدريب (مسح أسري)", "source": "gastat_pub", "category_id": "514986", "match": "Education_and_Training"},
+    "odp_schools_public": {"category": "education", "name": "مدارس التعليم العام الحكومي (قائمة بالمناطق)", "source": "odp", "title_like": "أسماء مدارس التعليم العام الحكومي"},
+    "odp_schools_private": {"category": "education", "name": "مدارس التعليم الخاص (قائمة بالمناطق)", "source": "odp", "title_like": "أسماء مدارس التعليم الخاص غير الحكومية"},
+    "health_care": {"category": "health", "name": "إحصاءات الرعاية الصحية", "source": "gastat_pub", "category_id": "123812", "match": "Health_?[Cc]are"},
+    "health_establishments": {"category": "health", "name": "المنشآت والقوى العاملة الصحية", "source": "gastat_pub", "category_id": "2968800", "match": "Healthcare_Establishments"},
+    "women_gender": {"category": "women", "name": "إحصاءات النوع الاجتماعي", "source": "gastat_pub", "category_id": "123614", "match": "jdwl_lnw|[Gg]ender|lnw_ljtm"},
+    "momah_parks": {"category": "infrastructure", "name": "الحدائق والمسطحات الخضراء (المنتزهات)", "source": "momah", "match": "الحدائق والمسطحات"},
+    "momah_plazas": {"category": "infrastructure", "name": "الساحات البلدية", "source": "momah", "match": "الساحات البلدية"},
+    "momah_trees": {"category": "infrastructure", "name": "الأشجار والزهور المزروعة", "source": "momah", "match": "الأشجار والزهور"},
+    "momah_urban_centers": {"category": "infrastructure", "name": "المراكز الحضرية", "source": "momah", "match": "المراكز الحضرية"},
+    "momah_service_offices": {"category": "infrastructure", "name": "مكاتب الخدمات البلدية", "source": "momah", "match": "مكاتب الخدمات البلدية"},
+    "odp_municipalities": {"category": "infrastructure", "name": "توزيع البلديات حسب فئاتها على الأمانات", "source": "odp", "dataset_id": "958343ed", "title_like": "توزيع البلديات حسب فئاتها"},
+    "momah_fields": {"category": "sports", "name": "الملاعب البلدية", "source": "momah", "match": "الملاعب البلدية"},
+    "odp_health_visits": {"category": "health", "name": "زيارات الرعاية الصحية الأولية حسب التجمعات", "source": "odp", "dataset_id": "6610fd74-8f0d-4296-8e9a-7fade1382def"},
+    "odp_disability_elderly": {"category": "disability", "name": "كبار السن من ذوي الإعاقة", "source": "odp", "dataset_id": "51fedc99-df90-4c6f-9a0a-abdb1b3cd7c7"},
+    "odp_disability": {"category": "disability", "name": "البيانات الديموغرافية لذوي الإعاقة", "source": "odp", "dataset_id": "b0b9016e-5406-4448-a532-06cfc37a399a"},
+    "odp_qurra": {"category": "labor", "name": "مراكز قرة (ضيافة الأطفال)", "source": "odp", "dataset_id": "4031f876-6476-49e7-a28d-b2d6380dfc8b"},
+    "odp_sports_centers": {"category": "sports", "name": "الصالات والمراكز الرياضية المرخصة", "source": "odp", "dataset_id": "beb20c0d-2c9f-49ea-9952-6a41f915c985"},
+    "odp_sports_facilities": {"category": "sports", "name": "المنشآت الرياضية", "source": "odp", "dataset_id": "d93d32ab-530b-4dd4-b27f-a42a25341786"},
+    "odp_nonprofit": {"category": "nonprofit", "name": "الكيانات غير الربحية حسب المنطقة (13 مجموعة)", "source": "odp", "title_like": "الكيانات غير الربحية", "all_matching": true},
+    "census_2022": {"category": "census_population|census_nationality|census_marital|census_growth|census_dependency|census_households|census_buildings|census_units|population_housing", "name": "تعداد السعودية 2022 (ثابت حتى التعداد القادم)", "source": "census_tableau", "snapshot": "data/census_2022.json"}
+  }
+}
