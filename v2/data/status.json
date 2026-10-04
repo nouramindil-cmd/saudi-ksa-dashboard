@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-04T18:06:07Z",
+ "built_at": "2026-10-04T18:06:58Z",
  "manifest": {
   "labor_registry": {
    "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -266,112 +266,112 @@
   {
    "category": "education",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "odp_schools_public",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "education",
    "indicator": "odp_schools_private",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "health",
    "indicator": "health_establishments",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "health",
    "indicator": "health_establishments",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "health",
    "indicator": "health_establishments",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "health",
    "indicator": "health_establishments",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "health",
    "indicator": "odp_health_visits",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "disability",
    "indicator": "odp_disability",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "disability",
    "indicator": "odp_disability_elderly",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "labor",
    "indicator": "labor_registry",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "labor",
    "indicator": "labor_registry",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "labor",
    "indicator": "labor_registry",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "labor",
    "indicator": "odp_qurra",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "sports",
    "indicator": "odp_sports_centers",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "sports",
    "indicator": "odp_sports_facilities",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "sports",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "sports",
@@ -381,17 +381,17 @@
   {
    "category": "nonprofit",
    "indicator": "odp_nonprofit",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "security",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "security",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "infrastructure",
@@ -421,52 +421,52 @@
   {
    "category": "infrastructure",
    "indicator": "odp_municipalities",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "infrastructure",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "tourism",
    "indicator": "tourism_establishments",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "tourism",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "tourism",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "real_estate",
    "indicator": "real_estate_repi",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "religious",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "commerce",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "commerce",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   },
   {
    "category": "commerce",
    "indicator": "services_statistics",
-   "status": "no_file"
+   "status": "ok"
   }
  ]
 }

@@ -4,3 +4,4 @@ node_modules/
 .vercelignore_temp
 vercel.json
 *.xlsx
+!v2/data/raw/**/*.xlsx

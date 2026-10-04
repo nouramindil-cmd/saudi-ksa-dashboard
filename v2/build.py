@@ -257,11 +257,16 @@ def main():
             continue
         entry = {"name": cat.get("name", ck), "icon": cat.get("icon", ""), "baseline": {k: v for k, v in cat.items() if k not in ("name", "icon")},
                  "metrics": []}
+        prev_metrics = {m["key"]: m for m in (prev or {}).get("categories", {}).get(ck, {}).get("metrics", [])} if prev else {}
         for spec in METRICS.get(ck, []):
             ind_id, metrics, status = run_metric(spec)
             m = man["indicators"].get(ind_id, {})
             out["log"].append({"category": ck, "indicator": ind_id, "status": status})
             if not metrics:
+                # أمان: لا نُسقط مقياساً كان موجوداً في البناء السابق لمجرد تعثّر ملف اليوم — نُبقي القيم السابقة ونعلّمها
+                for pm in prev_metrics.values():
+                    if pm.get("indicator") == ind_id and pm["key"] not in {x["key"] for x in entry["metrics"]}:
+                        entry["metrics"].append({**pm, "parse_status": status})
                 continue
             for met in metrics:
                 met = {**met, "indicator": ind_id, "source": reg["sources"][reg["indicators"][ind_id]["source"]]["name"],
