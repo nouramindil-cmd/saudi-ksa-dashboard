@@ -441,7 +441,7 @@ def methodology(out):
         for m in c["metrics"]:
             rows.append({"category": c["name"], "metric": m["name"], "key": m["key"], "source": m.get("source"), "file": (out["manifest"].get(m["indicator"]) or {}).get("source_file"),
                          "ref": m.get("ref"), "period": m.get("period"), "source_date": m.get("source_date"), "source_url": m.get("source_url"),
-                         "normalized": m["key"] not in NON_COUNT, "runner": m.get("runner")})
+                         "runner": m.get("runner")})
     out["methodology"] = rows
 
 
@@ -508,8 +508,6 @@ def main():
     out["census_note"] = "تعداد السعودية 2022 — لقطة ثابتة من لوحات الهيئة حتى صدور التعداد القادم"
     out["manifest"] = {k: {kk: v.get(kk) for kk in ("name", "source", "status", "source_date", "checked_at", "last_change_at", "source_url", "source_file")}
                        for k, v in man["indicators"].items()}
-    normalize(out)
-    gap_index(out)
     methodology(out)
     (DATA / "dashboard.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     (DATA / "baseline_live.json").write_text(json.dumps(live_base, ensure_ascii=False), encoding="utf-8")
