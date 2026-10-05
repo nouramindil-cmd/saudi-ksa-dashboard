@@ -219,8 +219,7 @@ function sourceBox(sources) { if (!sources || !sources.length) return ''; const 
 function exportBar(k) { return `<div class="export-bar"><button class="export-btn" onclick="exportCSV('${k}')">تصدير CSV</button><button class="export-btn" onclick="exportJSON('${k}')">تصدير JSON</button></div>`; }
 
 // ----- الخريطة: تدرج كحلي واحد + مؤشر الفجوة -----
-const _applyHeat = applyHeatMap;
-function applyHeatMap(indicator) {
+applyHeatMap = function (indicator) {
   if (indicator && indicator.startsWith('gap') && LIVE && LIVE.gap_index) { const ax = indicator === 'gap' ? null : indicator.slice(4); HEAT_CONFIGS[indicator] = { label: ax ? 'فجوة ' + LIVE.gap_index.axes[ax].name : 'فجوة الخدمات', get: r => { const g = LIVE.gap_index.regions[r]; if (!g) return 0; return ax ? Math.round(100 - (g.axes[ax] ?? 0)) : (g.gap ?? 0); } }; }
   heatMapIndicator = indicator;
   const legend = document.getElementById('heatmapLegend'), resetBtn = document.getElementById('heatmapReset');
@@ -230,12 +229,12 @@ function applyHeatMap(indicator) {
   document.querySelectorAll('#saudi-map path').forEach(p => { const t = max > min ? (cfg.get(p.dataset.region) - min) / (max - min) : .5; const mix = (a, b) => Math.round(a + (b - a) * t); p.style.fill = `rgb(${mix(227, 19)},${mix(234, 49)},${mix(245, 92)})`; p.style.opacity = ''; });
   document.querySelectorAll('#saudi-map .region-label').forEach(t => { const v = cfg.get(t.dataset.label); t.style.fill = (max > min ? (v - min) / (max - min) : .5) > .55 ? '#fff' : '#374151'; });
   if (legend) legend.style.display = 'flex'; if (resetBtn) resetBtn.style.display = 'inline-block';
-}
-function resetHeatMap() { heatMapIndicator = null; const s = document.getElementById('heatmapSelect'); if (s) s.value = ''; const l = document.getElementById('heatmapLegend'), b = document.getElementById('heatmapReset'); if (l) l.style.display = 'none'; if (b) b.style.display = 'none'; document.querySelectorAll('#saudi-map path').forEach(p => { p.style.fill = ''; p.style.opacity = ''; }); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = ''); }
+};
+resetHeatMap = function () { heatMapIndicator = null; const s = document.getElementById('heatmapSelect'); if (s) s.value = ''; const l = document.getElementById('heatmapLegend'), b = document.getElementById('heatmapReset'); if (l) l.style.display = 'none'; if (b) b.style.display = 'none'; document.querySelectorAll('#saudi-map path').forEach(p => { p.style.fill = ''; p.style.opacity = ''; }); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = ''); };
 
 // ----- المحتوى: نُنقّي الإيموجي بعد كل عرض -----
 const _renderContent = renderContent;
-function renderContent() { _renderContent(); deEmoji(document.getElementById('dataContent')); deEmoji(document.getElementById('welcomeScreen')); }
+renderContent = function () { _renderContent(); deEmoji(document.getElementById('dataContent')); deEmoji(document.getElementById('welcomeScreen')); };
 
 function dstr(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString('ar-SA-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return s; } }
 function freshClass(d) { if (!d) return 'static'; const days = (Date.now() - new Date(d)) / 864e5; return days <= 120 ? 'fresh' : days <= 400 ? 'year' : 'old'; }
