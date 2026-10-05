@@ -19,23 +19,23 @@ js = max(re.findall(r"<script(?![^>]*src)[^>]*>(.*?)</script>", old, re.S), key=
 js = re.sub(r"// Load data - use embedded data or fetch.*?\n\}\n", "", js, count=1, flags=re.S)
 js = js.replace("  if (renderers[cat]) {\n    renderers[cat](r);\n  }\n}", "  if (renderers[cat]) {\n    renderers[cat](r);\n    injectLive(cat, r);\n  }\n}")
 js = js.replace("if (selectedCategory === 'executive_summary' || selectedCategory === 'comparison') {",
-                "if (['changes','gap','profile','methodology'].includes(selectedCategory)) { welcome.style.display = 'none'; content.style.display = 'block'; Object.values(charts).forEach(c => c.destroy()); charts = {}; ({changes: renderChanges, gap: renderGap, profile: renderProfile, methodology: renderMethodology})[selectedCategory](); return; }\n  if (selectedCategory === 'executive_summary' || selectedCategory === 'comparison') {")
+                "if (['changes','gap','methodology'].includes(selectedCategory)) { welcome.style.display = 'none'; content.style.display = 'block'; Object.values(charts).forEach(c => c.destroy()); charts = {}; ({changes: renderChanges, gap: renderGap, methodology: renderMethodology})[selectedCategory](); return; }\n  if (selectedCategory === 'executive_summary' || selectedCategory === 'comparison') {")
 assert "injectLive(cat, r)" in js and "renderGap" in js
 
 NAV = [
-    ("المؤشرات الحيّة", [("population_housing", "السكان والإسكان"), ("education", "التعليم"), ("health", "الصحة"), ("disability", "ذوو الإعاقة"), ("labor", "سوق العمل والمنشآت"),
+    ("المؤشرات الحيّة", "g-live", [("population_housing", "السكان والإسكان"), ("education", "التعليم"), ("health", "الصحة"), ("disability", "ذوو الإعاقة"), ("labor", "سوق العمل والمنشآت"),
                          ("sports", "الرياضة"), ("nonprofit", "القطاع غير الربحي"), ("security", "الأمن والطوارئ"), ("infrastructure", "الخدمات البلدية"), ("tourism", "السياحة والضيافة"),
                          ("real_estate", "العقارات"), ("religious", "الشؤون الدينية"), ("commerce", "التجارة"), ("women", "المرأة")]),
-    ("التحليل", [("gap", "مؤشر فجوة الخدمات"), ("profile", "ملف المنطقة"), ("comparison", "مقارنة المناطق"), ("executive_summary", "الملخص التنفيذي"), ("changes", "سجل التغيّرات")]),
-    ("تعداد 2022", [("census_population", "التركيبة السكانية"), ("census_nationality", "الجنسية"), ("census_marital", "الحالة الاجتماعية"), ("census_growth", "النمو السكاني"),
+    ("التحليل", "g-analysis", [("gap", "مؤشر فجوة الخدمات"), ("comparison", "مقارنة المناطق"), ("executive_summary", "الملخص التنفيذي"), ("changes", "سجل التغيّرات")]),
+    ("تعداد 2022", "g-census", [("census_population", "التركيبة السكانية"), ("census_nationality", "الجنسية"), ("census_marital", "الحالة الاجتماعية"), ("census_growth", "النمو السكاني"),
                     ("census_dependency", "الإعالة"), ("census_households", "تركيبة الأسر"), ("census_buildings", "المساكن"), ("census_units", "الوحدات السكنية")]),
-    ("المرجع", [("methodology", "المنهجية والمصادر")]),
+    ("المرجع", "g-ref", [("methodology", "المنهجية والمصادر")]),
 ]
 nav_html = "".join(
-    f'<div class="nav-group"><div class="nav-title">{g}</div>' + "".join(
+    f'<div class="nav-group {cls}"><div class="nav-title">{g}</div>' + "".join(
         f'<button class="cat-btn" data-cat="{k}" onclick="selectCategory(\'{k}\')">{n}'
         + (f'<span class="nav-count" id="chgCount"></span>' if k == "changes" else "") + '</button>' for k, n in items) + "</div>"
-    for g, items in NAV)
+    for g, cls, items in NAV)
 
 CSS = r"""
 :root{--navy:#13315C;--navy-2:#1F4E9C;--gold:#B07D00;--teal:#0F9B8E;--brick:#A63D40;--violet:#6D5BB8;
@@ -75,6 +75,12 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .cat-btn{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:right;background:transparent;border:0;border-right:3px solid transparent;padding:7px 10px;border-radius:0 6px 6px 0;color:var(--ink-2);font-size:13.5px;cursor:pointer}
 .cat-btn:hover{background:var(--card);color:var(--ink)}
 .cat-btn.active{background:var(--card);color:var(--navy);font-weight:600;border-right-color:var(--gold)}
+.nav-group{--g:var(--navy)}.g-analysis{--g:var(--gold)}.g-census{--g:var(--teal)}.g-ref{--g:#5B6B7F}
+.nav-group .nav-title{color:var(--g);display:flex;align-items:center;gap:6px}
+.nav-group .nav-title::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--g)}
+.nav-group .cat-btn{border-right-color:transparent}
+.nav-group .cat-btn.active{border-right-color:var(--g);color:var(--g)}
+.nav-group .cat-btn:hover{color:var(--g)}
 .nav-count{font-size:11px;background:var(--tint);color:var(--navy);padding:0 7px;border-radius:9px;font-weight:600}
 .content{min-width:0}
 
@@ -312,23 +318,6 @@ function renderGap() {
   html += '</table></div><div class="detail-card" style="margin-top:16px"><h3>مكوّنات كل محور</h3>' + Object.entries(G.axes).map(([ak, a]) => `<p style="font-size:13px;margin:6px 0"><b style="color:${AXIS_COLORS[ak]}">${a.name}:</b> ${a.metrics.map(m => m.name + (m.period ? ` (${m.period})` : '')).join(' · ')}</p>`).join('') + '</div></div>';
   content.innerHTML = html;
   makeBarChart('gapChart', regs.map(x => x[0]), Object.entries(G.axes).map(([ak, a]) => ({ label: a.name, data: regs.map(([, g]) => g.axes[ak] ?? 0), backgroundColor: AXIS_COLORS[ak] })), { chartOptions: { indexAxis: 'y', scales: { x: { max: 100 }, y: {} } } });
-}
-
-function renderProfile() {
-  const content = document.getElementById('dataContent'); const r = selectedRegion;
-  if (!r) { content.innerHTML = `<div class="fade-in"><div class="eyebrow">تحليل</div><h2>ملف المنطقة</h2><p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">اختاري منطقة، ثم «طباعة / PDF». الملف صفحتان: المؤشرات معيّرة بالسكان، ترتيب المنطقة، وأبرز الفجوات.</p><div class="region-overview">` + DATA.regions.map(x => `<div class="region-overview-card" onclick="selectRegion('${x}')"><div class="ro-name">${x}</div></div>`).join('') + '</div></div>'; return; }
-  const G = LIVE.gap_index, g = G.regions[r], pop = G.population[r];
-  let html = `<div class="fade-in profile-print"><div class="profile-head"><div><div class="eyebrow">ملف المنطقة</div><h2 style="margin:0">${r}</h2><div style="color:var(--muted);font-size:12.5px">نبض المناطق · أُعدّ آلياً في ${dstr(new Date().toISOString())} · السكان ${formatNum(pop)} نسمة (تعداد 2022)</div></div><button class="btn primary no-print" onclick="window.print()">طباعة / PDF</button></div>`;
-  html += '<div class="summary-grid">' + summaryCard('', g.gap + ' / 100', 'فجوة الخدمات الكلية') + summaryCard('', g.rank + ' من 13', 'الترتيب بين المناطق') + '</div><div class="detail-card" style="margin-bottom:16px"><h3>تغطية المحاور الخمسة</h3>' + axisRows(g, G) + '</div>';
-  const weakest = Object.entries(g.axes).sort((a, b) => a[1] - b[1]).slice(0, 3);
-  html += insightBox(`أبرز ثلاث فجوات: ` + weakest.map(([ak, v]) => `${G.axes[ak].name} (${v.toFixed(0)} من 100، الترتيب ${g.axis_rank[ak]} من 13)`).join('، ') + '. الدرجة نسبية بين المناطق الثلاث عشرة بعد التعيير بالسكان.');
-  const all = Object.entries(LIVE.categories).flatMap(([ck, c]) => c.metrics.filter(m => m.per_10k && m.rank_per_10k).map(m => ({ ...m, cat: c.name })));
-  const worst = all.filter(m => m.rank_per_10k[r] >= 11).sort((a, b) => b.rank_per_10k[r] - a.rank_per_10k[r]).slice(0, 6);
-  if (worst.length) html += '<div class="detail-card" style="margin-bottom:16px"><h3>مقاييس تقع فيها المنطقة ضمن الثلاث الأدنى لكل نسمة</h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>لكل 10 آلاف نسمة</th><th>الترتيب</th><th>بيانات</th></tr>' + worst.map(m => `<tr><td>${m.cat}</td><td>${m.name}</td><td>${m.per_10k[r].toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 2 })}</td><td>${m.rank_per_10k[r]} / 13</td><td>${m.period || ''}</td></tr>`).join('') + '</table></div>';
-  html += '<div class="detail-card"><h3>كل المؤشرات الحيّة للمنطقة</h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>العدد</th><th>لكل 10 آلاف نسمة</th><th>الترتيب</th><th>بيانات</th><th>نشر المصدر</th></tr>';
-  Object.entries(LIVE.categories).forEach(([ck, c]) => c.metrics.forEach(m => { const v = m.values[r]; html += `<tr><td>${c.name}</td><td>${m.name}</td><td>${v == null ? '—' : (m.key === 'repi' ? v : formatNum(v))}</td><td>${m.per_10k ? m.per_10k[r].toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 2 }) : '—'}</td><td>${(m.rank_per_10k || m.rank || {})[r] || '—'} / 13</td><td>${m.period || ''}</td><td>${dstr(m.source_date)}</td></tr>`; }));
-  html += '</table></div><p style="font-size:11.5px;color:var(--muted);margin-top:10px">المصادر: ' + Object.values(LIVE.sources).map(s => s.name).join(' · ') + '. التعيير بسكان تعداد 2022. التفاصيل في صفحة المنهجية.</p></div>';
-  content.innerHTML = html;
 }
 
 function renderMethodology() {
