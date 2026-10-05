@@ -233,6 +233,9 @@ applyHeatMap = function (indicator) {
 resetHeatMap = function () { heatMapIndicator = null; const s = document.getElementById('heatmapSelect'); if (s) s.value = ''; const l = document.getElementById('heatmapLegend'), b = document.getElementById('heatmapReset'); if (l) l.style.display = 'none'; if (b) b.style.display = 'none'; document.querySelectorAll('#saudi-map path').forEach(p => { p.style.fill = ''; p.style.opacity = ''; }); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = ''); };
 
 // ----- المحتوى: نُنقّي الإيموجي بعد كل عرض -----
+const _selectRegion = selectRegion, _resetSelection = resetSelection;
+selectRegion = function (region) { _selectRegion(region); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = (t.dataset.label === region) ? '#fff' : (heatMapIndicator ? t.style.fill : '')); };
+resetSelection = function () { _resetSelection(); document.querySelectorAll('#saudi-map .region-label').forEach(t => { if (!heatMapIndicator) t.style.fill = ''; }); };
 const _renderContent = renderContent;
 renderContent = function () { _renderContent(); deEmoji(document.getElementById('dataContent')); deEmoji(document.getElementById('welcomeScreen')); };
 
@@ -243,7 +246,8 @@ function fmtv(m, v) { if (v == null) return '—'; if (m.key === 'repi' || (perC
 function mval(m, r) { if (perCapita && m.per_10k) { if (r) return m.per_10k[r]; const pop = Object.values(LIVE.gap_index.population).reduce((a, b) => a + b, 0); return pop ? m.total / pop * 10000 : null; } return r ? m.values[r] : m.total; }
 
 function liveHeader() {
-  if (!LIVE) return;
+  const rl = document.getElementById('regionList'); if (rl && DATA) rl.innerHTML = DATA.regions.map(r => `<button onclick="selectRegion('${r}')">${r}</button>`).join('');
+  if (!LIVE) { const el = document.getElementById('liveStatus'); if (el) el.textContent = 'تعذّر تحميل الطبقة الحيّة — تُعرض بيانات النسخة الأولى'; return; }
   const metrics = Object.values(LIVE.categories).flatMap(c => c.metrics);
   const checked = metrics.map(m => m.checked_at).filter(Boolean).sort().pop();
   const newest = metrics.map(m => m.source_date).filter(Boolean).sort().pop();
@@ -252,7 +256,6 @@ function liveHeader() {
   const el = document.getElementById('liveStatus');
   if (el) el.innerHTML = `${metrics.length} مقياساً من ${Object.keys(LIVE.manifest || {}).length} مصدراً رسمياً · آخر فحص آلي قبل <b>${hrs == null ? '—' : hrs < 24 ? hrs + ' ساعة' : Math.round(hrs / 24) + ' يوماً'}</b> · <b>${month}</b> مصادر نُشر لها جديد خلال 30 يوماً · أحدث نشر: <b>${dstr(newest)}</b>`;
   const c = document.getElementById('chgCount'); if (c) c.textContent = CHANGES.length || '';
-  const rl = document.getElementById('regionList'); if (rl) rl.innerHTML = DATA.regions.map(r => `<button onclick="selectRegion('${r}')">${r}</button>`).join('');
 }
 
 function liveCard(m, r, i, active) {
