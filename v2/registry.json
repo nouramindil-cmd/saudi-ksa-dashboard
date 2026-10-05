@@ -216,6 +216,26 @@
       "name": "تعداد السعودية 2022 (ثابت حتى التعداد القادم)",
       "source": "census_tableau",
       "snapshot": "data/census_2022.json"
+    },
+    "population_estimates": {
+      "category": "population_housing",
+      "name": "التقديرات السكانية حسب المناطق",
+      "source": "gastat_pub",
+      "category_id": "2366987",
+      "match": "Population_Estimates"
+    },
+    "housing_bulletin": {
+      "category": "population_housing",
+      "name": "نشرة إحصاءات المساكن",
+      "source": "gastat_pub",
+      "category_id": "3175009",
+      "match": "Housing.Statistics"
+    },
+    "odp_births": {
+      "category": "health",
+      "name": "المواليد الأحياء حسب فروع وزارة الصحة (كل القطاعات)",
+      "source": "odp",
+      "dataset_id": "8861d0ef"
     }
   }
 }

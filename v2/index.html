@@ -144,6 +144,7 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .live-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px;border-bottom:2px solid var(--navy);padding-bottom:8px}
 .live-head h3{font-size:16px;color:var(--navy)}
 .live-head span{font-size:12.5px;color:var(--muted)}
+.live-group{font-size:12.5px;font-weight:600;color:var(--muted);margin:14px 0 8px;padding-right:10px;border-right:3px solid var(--line-2)}
 .live-card{cursor:pointer}
 .live-card.active{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
 .live-card .stat-l{color:var(--ink-2);font-weight:500;min-height:36px}
@@ -3060,7 +3061,7 @@ renderContent = function () { _renderContent(); deEmoji(document.getElementById(
 function dstr(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString('ar-SA-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return s; } }
 function freshClass(d) { if (!d) return 'static'; const days = (Date.now() - new Date(d)) / 864e5; return days <= 120 ? 'fresh' : days <= 400 ? 'year' : 'old'; }
 function freshWord(d) { return { fresh: 'نُشر خلال 4 أشهر', year: 'نُشر خلال سنة', old: 'لم يُحدَّث عند المصدر منذ أكثر من سنة', static: 'ثابت' }[freshClass(d)]; }
-function fmtv(m, v) { if (v == null) return '—'; if (m.key === 'repi') return Number(v).toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 2 }); return Math.round(v).toLocaleString('ar-SA-u-nu-latn'); }
+function fmtv(m, v) { if (v == null) return '—'; if (m.key === 'repi' || m.agg === 'mean') return Number(v).toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 2 }); return Math.round(v).toLocaleString('ar-SA-u-nu-latn'); }
 function mval(m, r) { return r ? m.values[r] : m.total; }
 
 function liveHeader() {
@@ -3078,7 +3079,7 @@ function liveHeader() {
 
 function liveCard(m, r, i, active) {
   const v = mval(m, r);
-  return `<div class="stat live-card ${active ? 'active' : ''}" data-i="${i}"><div class="stat-v">${fmtv(m, v)}</div><div class="stat-l">${m.name}</div><div class="live-meta"><span class="live-dot ${freshClass(m.source_date)}"></span>بيانات <b>${m.period || '—'}</b> · نُشر ${dstr(m.source_date)}</div></div>`;
+  return `<div class="stat live-card ${active ? 'active' : ''}" data-i="${i}"><div class="stat-v">${fmtv(m, v)}</div><div class="stat-l">${m.name}${(!r && m.agg === 'mean') ? ' <small>· متوسط المناطق</small>' : ''}</div><div class="live-meta"><span class="live-dot ${freshClass(m.source_date)}"></span>بيانات <b>${m.period || '—'}</b> · نُشر ${dstr(m.source_date)}</div></div>`;
 }
 
 function injectLive(cat, r) {
@@ -3088,7 +3089,7 @@ function injectLive(cat, r) {
   const f = c.freshness || {};
   content.insertAdjacentHTML('afterbegin', `<div class="live-box fade-in">
     <div class="live-head"><h3>أحدث البيانات من المصدر${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً · أحدث نشر ${dstr(f.latest_source_date)} · آخر فحص ${dstr(f.last_checked)}</span></div>
-    <div class="summary-grid" id="liveCards">${c.metrics.map((m, i) => liveCard(m, r, i, i === 0)).join('')}</div>
+    ${(() => { const groups = []; c.metrics.forEach((m, i) => { const g = m.group || ''; let G = groups.find(x => x.g === g); if (!G) { G = { g, items: [] }; groups.push(G); } G.items.push([m, i]); }); return `<div id="liveCards">` + groups.map(G => `${G.g ? `<div class="live-group">${G.g}</div>` : ''}<div class="summary-grid">${G.items.map(([m, i]) => liveCard(m, r, i, i === 0)).join('')}</div>`).join('') + `</div>`; })()}
     <div class="detail-grid"><div class="detail-card full-width"><h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div><div class="live-src" id="liveSrc"></div></div>
     <div class="detail-card full-width" id="liveSeriesCard" style="display:none"><h3 id="liveSeriesTitle"></h3><div class="chart-container" style="height:280px"><canvas id="liveSeries"></canvas></div></div></div>
     <div class="live-divider"><span>بيانات النسخة الأولى (كما كانت)</span></div></div>`);

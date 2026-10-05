@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T16:15:17Z",
+  "generated_at": "2026-10-05T17:23:48Z",
   "indicators": {
     "labor_registry": {
       "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -357,6 +357,48 @@
       "fetched_at": "2026-10-05T15:53:41Z",
       "status": "updated",
       "last_change_at": "2026-10-05T15:53:41Z"
+    },
+    "population_estimates": {
+      "name": "التقديرات السكانية حسب المناطق",
+      "category": "population_housing",
+      "source": "gastat_pub",
+      "checked_at": "2026-10-05T17:22:54Z",
+      "source_url": "https://www.stats.gov.sa/documents/20117/2435259/Population_Estimates_Publication_2024.xlsx_fixed_2514637/08d1c287-efe6-f7ee-5d43-564c25bfd1ec?t=1738828650016",
+      "source_file": "Population_Estimates_Publication_2024.xlsx_fixed_2514637",
+      "source_date": "2025-02-06",
+      "sha256": "4dc73233b7aa5ec64eb68c92a765245b13b58ec25c27a84128da8a86f7276212",
+      "local_path": "data/raw/population_estimates/Population_Estimates_Publication_2024.xlsx",
+      "fetched_at": "2026-10-05T17:22:56Z",
+      "status": "updated",
+      "last_change_at": "2026-10-05T17:22:56Z"
+    },
+    "housing_bulletin": {
+      "name": "نشرة إحصاءات المساكن",
+      "category": "population_housing",
+      "source": "gastat_pub",
+      "checked_at": "2026-10-05T17:22:56Z",
+      "source_url": "https://www.stats.gov.sa/documents/20117/2435273/Housing+Statistics+Bulletin+2024.xlsx/eedad6e5-723a-8543-c2e4-cd15280f5216?t=1789465429023",
+      "source_file": "Housing+Statistics+Bulletin+2024.xlsx",
+      "source_date": "2026-09-15",
+      "sha256": "8005c763800bfeb6d8164e396ed649939f04d01906f67e47901ab7774469bf0b",
+      "local_path": "data/raw/housing_bulletin/Housing_Statistics_Bulletin_2024.xlsx",
+      "fetched_at": "2026-10-05T17:22:58Z",
+      "status": "updated",
+      "last_change_at": "2026-10-05T17:22:58Z"
+    },
+    "odp_births": {
+      "name": "المواليد الأحياء حسب فروع وزارة الصحة (كل القطاعات)",
+      "category": "health",
+      "source": "odp",
+      "checked_at": "2026-10-05T17:23:30Z",
+      "source_url": "https://open.data.gov.sa/ar/datasets/view/8861d0ef-d7b9-4320-89d5-c029bf9cc3ad",
+      "source_file": "Live Births in all Health Sectors 2024.xlsx",
+      "source_date": "2026-01-08",
+      "sha256": "e5ff9113ca77d17d33cca8372aa6e766cf05b117a68ad889514082bf23de8ff1",
+      "local_path": "data/raw/odp_births/Live_Births_in_all_Health_Sectors_2024.xlsx",
+      "fetched_at": "2026-10-05T17:23:48Z",
+      "status": "updated",
+      "last_change_at": "2026-10-05T17:23:48Z"
     }
   }
 }

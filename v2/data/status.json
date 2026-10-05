@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-05T17:18:47Z",
+ "built_at": "2026-10-05T17:26:55Z",
  "manifest": {
   "labor_registry": {
    "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -260,12 +260,57 @@
    "last_change_at": "2026-10-05T15:53:41Z",
    "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=أسماء مدارس التعليم",
    "source_file": "3 ملفات: أسماء مدارس التعليم"
+  },
+  "population_estimates": {
+   "name": "التقديرات السكانية حسب المناطق",
+   "source": "gastat_pub",
+   "status": "updated",
+   "source_date": "2025-02-06",
+   "checked_at": "2026-10-05T17:22:54Z",
+   "last_change_at": "2026-10-05T17:22:56Z",
+   "source_url": "https://www.stats.gov.sa/documents/20117/2435259/Population_Estimates_Publication_2024.xlsx_fixed_2514637/08d1c287-efe6-f7ee-5d43-564c25bfd1ec?t=1738828650016",
+   "source_file": "Population_Estimates_Publication_2024.xlsx_fixed_2514637"
+  },
+  "housing_bulletin": {
+   "name": "نشرة إحصاءات المساكن",
+   "source": "gastat_pub",
+   "status": "updated",
+   "source_date": "2026-09-15",
+   "checked_at": "2026-10-05T17:22:56Z",
+   "last_change_at": "2026-10-05T17:22:58Z",
+   "source_url": "https://www.stats.gov.sa/documents/20117/2435273/Housing+Statistics+Bulletin+2024.xlsx/eedad6e5-723a-8543-c2e4-cd15280f5216?t=1789465429023",
+   "source_file": "Housing+Statistics+Bulletin+2024.xlsx"
+  },
+  "odp_births": {
+   "name": "المواليد الأحياء حسب فروع وزارة الصحة (كل القطاعات)",
+   "source": "odp",
+   "status": "updated",
+   "source_date": "2026-01-08",
+   "checked_at": "2026-10-05T17:23:30Z",
+   "last_change_at": "2026-10-05T17:23:48Z",
+   "source_url": "https://open.data.gov.sa/ar/datasets/view/8861d0ef-d7b9-4320-89d5-c029bf9cc3ad",
+   "source_file": "Live Births in all Health Sectors 2024.xlsx"
   }
  },
  "log": [
   {
-   "category": "education",
-   "indicator": "services_statistics",
+   "category": "population_housing",
+   "indicator": "housing_bulletin",
+   "status": "ok"
+  },
+  {
+   "category": "population_housing",
+   "indicator": "housing_bulletin",
+   "status": "ok"
+  },
+  {
+   "category": "population_housing",
+   "indicator": "housing_bulletin",
+   "status": "ok"
+  },
+  {
+   "category": "population_housing",
+   "indicator": "odp_births",
    "status": "ok"
   },
   {
@@ -291,6 +336,31 @@
   {
    "category": "education",
    "indicator": "services_statistics",
+   "status": "ok"
+  },
+  {
+   "category": "education",
+   "indicator": "services_statistics",
+   "status": "ok"
+  },
+  {
+   "category": "education",
+   "indicator": "odp_students_directorates",
+   "status": "ok"
+  },
+  {
+   "category": "education",
+   "indicator": "odp_students_directorates",
+   "status": "ok"
+  },
+  {
+   "category": "education",
+   "indicator": "odp_students_directorates",
+   "status": "ok"
+  },
+  {
+   "category": "education",
+   "indicator": "odp_students_directorates",
    "status": "ok"
   },
   {
@@ -329,8 +399,63 @@
    "status": "ok"
   },
   {
+   "category": "health",
+   "indicator": "health_care",
+   "status": "ok"
+  },
+  {
+   "category": "health",
+   "indicator": "health_care",
+   "status": "ok"
+  },
+  {
+   "category": "health",
+   "indicator": "health_care",
+   "status": "ok"
+  },
+  {
    "category": "disability",
    "indicator": "odp_disability",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability_elderly",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability_elderly",
+   "status": "ok"
+  },
+  {
+   "category": "disability",
+   "indicator": "odp_disability_elderly",
    "status": "ok"
   },
   {
@@ -359,6 +484,21 @@
    "status": "ok"
   },
   {
+   "category": "labor",
+   "indicator": "odp_qurra",
+   "status": "ok"
+  },
+  {
+   "category": "labor",
+   "indicator": "odp_qurra",
+   "status": "ok"
+  },
+  {
+   "category": "labor",
+   "indicator": "odp_qurra",
+   "status": "ok"
+  },
+  {
    "category": "sports",
    "indicator": "odp_sports_centers",
    "status": "ok"
@@ -376,6 +516,21 @@
   {
    "category": "sports",
    "indicator": "momah_fields",
+   "status": "ok"
+  },
+  {
+   "category": "nonprofit",
+   "indicator": "odp_nonprofit",
+   "status": "ok"
+  },
+  {
+   "category": "nonprofit",
+   "indicator": "odp_nonprofit",
+   "status": "ok"
+  },
+  {
+   "category": "nonprofit",
+   "indicator": "odp_nonprofit",
    "status": "ok"
   },
   {
@@ -466,6 +621,36 @@
   {
    "category": "commerce",
    "indicator": "services_statistics",
+   "status": "ok"
+  },
+  {
+   "category": "women",
+   "indicator": "labor_registry",
+   "status": "ok"
+  },
+  {
+   "category": "women",
+   "indicator": "labor_registry",
+   "status": "ok"
+  },
+  {
+   "category": "women",
+   "indicator": "labor_registry",
+   "status": "ok"
+  },
+  {
+   "category": "women",
+   "indicator": "women_gender",
+   "status": "ok"
+  },
+  {
+   "category": "women",
+   "indicator": "women_gender",
+   "status": "ok"
+  },
+  {
+   "category": "women",
+   "indicator": "women_gender",
    "status": "ok"
   }
  ]
