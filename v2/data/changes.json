@@ -1,1 +1,47 @@
-[]
+[
+ {
+  "at": "2026-10-05T17:34:13Z",
+  "category": "population_housing",
+  "metric": "housing_units",
+  "name": "المساكن المشغولة بأسر سعودية",
+  "regions_changed": 13,
+  "period": null,
+  "source_date": "2026-05-21"
+ },
+ {
+  "at": "2026-10-05T17:34:13Z",
+  "category": "population_housing",
+  "metric": "housing_villa",
+  "name": "فلل",
+  "regions_changed": 13,
+  "period": null,
+  "source_date": "2026-05-21"
+ },
+ {
+  "at": "2026-10-05T17:34:13Z",
+  "category": "population_housing",
+  "metric": "housing_apartment",
+  "name": "شقق",
+  "regions_changed": 13,
+  "period": null,
+  "source_date": "2026-05-21"
+ },
+ {
+  "at": "2026-10-05T17:34:13Z",
+  "category": "population_housing",
+  "metric": "housing_traditional",
+  "name": "منازل شعبية",
+  "regions_changed": 13,
+  "period": null,
+  "source_date": "2026-05-21"
+ },
+ {
+  "at": "2026-10-05T17:34:13Z",
+  "category": "population_housing",
+  "metric": "housing_floor",
+  "name": "أدوار",
+  "regions_changed": 13,
+  "period": null,
+  "source_date": "2026-05-21"
+ }
+]

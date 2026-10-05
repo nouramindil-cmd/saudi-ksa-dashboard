@@ -161,7 +161,14 @@ def pick_latest(cands, pattern):
     m = [c for c in cands if rx.search(c.get("name") or c.get("title") or "")]
     if not m:
         return None
-    return max(m, key=lambda c: (c.get("source_date") or c.get("created") or ""))
+
+    def period_key(c):
+        """أحدث فترة بيانات في اسم الملف (سنة + ربع إن وُجد) ثم تاريخ النشر — فلا يفوز إصدار قديم أُعيد رفعه لاحقاً."""
+        name = c.get("name") or c.get("title") or ""
+        years = [int(y) for y in re.findall(r"(20[1-3]\d)", name)]
+        q = re.search(r"Q([1-4])", name)
+        return (max(years) if years else 0, int(q.group(1)) if q else 0, c.get("source_date") or c.get("created") or "")
+    return max(m, key=period_key)
 
 
 # ---------------- التشغيل ----------------

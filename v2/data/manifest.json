@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T17:23:48Z",
+  "generated_at": "2026-10-05T17:33:42Z",
   "indicators": {
     "labor_registry": {
       "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -376,15 +376,15 @@
       "name": "نشرة إحصاءات المساكن",
       "category": "population_housing",
       "source": "gastat_pub",
-      "checked_at": "2026-10-05T17:22:56Z",
-      "source_url": "https://www.stats.gov.sa/documents/20117/2435273/Housing+Statistics+Bulletin+2024.xlsx/eedad6e5-723a-8543-c2e4-cd15280f5216?t=1789465429023",
-      "source_file": "Housing+Statistics+Bulletin+2024.xlsx",
-      "source_date": "2026-09-15",
-      "sha256": "8005c763800bfeb6d8164e396ed649939f04d01906f67e47901ab7774469bf0b",
-      "local_path": "data/raw/housing_bulletin/Housing_Statistics_Bulletin_2024.xlsx",
-      "fetched_at": "2026-10-05T17:22:58Z",
+      "checked_at": "2026-10-05T17:33:40Z",
+      "source_url": "https://www.stats.gov.sa/documents/20117/2435267/Housing_Statistics_Bulletin_2025.xlsx_fixed_14560619/8fdd540e-0a99-25a0-2a16-6442916fb5b8?t=1779377856302",
+      "source_file": "Housing_Statistics_Bulletin_2025.xlsx_fixed_14560619",
+      "source_date": "2026-05-21",
+      "sha256": "8c245a4021f586704fbfc28e2b8feb49ef8a08527cbd535e11470488cde8b892",
+      "local_path": "data/raw/housing_bulletin/Housing_Statistics_Bulletin_2025.xlsx",
+      "fetched_at": "2026-10-05T17:33:42Z",
       "status": "updated",
-      "last_change_at": "2026-10-05T17:22:58Z"
+      "last_change_at": "2026-10-05T17:33:42Z"
     },
     "odp_births": {
       "name": "المواليد الأحياء حسب فروع وزارة الصحة (كل القطاعات)",

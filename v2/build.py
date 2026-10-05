@@ -323,9 +323,8 @@ R = lambda ind, label, key, name, sum_label=None, period=None: ("records_by_regi
 # ---------------- خريطة الأقسام → المقاييس ----------------
 METRICS = {
     "population_housing": [
-        ("region_table", "housing_bulletin", dict(sheet="1", period="2024", cols={"الجملة": ("housing_units", "المساكن المشغولة بأسر سعودية"), "فيلا": ("housing_villa", "فلل"), "شقة": ("housing_apartment", "شقق"), "منزل شعبي": ("housing_traditional", "منازل شعبية"), "دور": ("housing_floor", "أدوار")})),
-        ("region_table", "housing_bulletin", dict(sheet="2", period="2024", cols={"ملكية بلا": ("tenure_owned_free", "مساكن مملوكة بلا رهن"), "ملكية برهن": ("tenure_owned_mortgage", "مساكن مملوكة برهن"), "مستأجر": ("tenure_rented", "مساكن مستأجرة")})),
-        ("region_table", "housing_bulletin", dict(sheet="12", period="2024", cols={"أكثر من 30,000": ("rent_over_30k", "مساكن بإيجار سنوي أكثر من 30 ألف ريال"), " 10,000": ("rent_under_10k", "مساكن بإيجار سنوي 10 آلاف ريال فأقل")})),
+        ("region_table", "housing_bulletin", dict(sheet="1", cols={"الجملة": ("housing_units", "المساكن المشغولة بأسر سعودية"), "فيلا": ("housing_villa", "فلل"), "شقة": ("housing_apartment", "شقق"), "منزل شعبي": ("housing_traditional", "منازل شعبية"), "دور": ("housing_floor", "أدوار")})),
+        ("region_table", "housing_bulletin", dict(sheet="3", cols={"6+": ("hh_6plus", "مساكن تسكنها أسر من 6 أفراد فأكثر"), "1": ("hh_1", "مساكن يسكنها فرد واحد")})),
         ("births_branches", "odp_births", {}),
     ],
     "education": [
@@ -640,6 +639,9 @@ def main():
                         entry["metrics"].append({**pm, "parse_status": status})
                 continue
             for met in metrics:
+                if not met.get("period"):  # سنة البيانات من اسم الملف عند غيابها داخل الجدول (مثل نشرة المساكن 2025)
+                    yrs = re.findall(r"(20[1-3]\d)", Path(raw_path(ind_id) or "").name)
+                    met["period"] = max(yrs) if yrs else None
                 if "_years_schools" in met:  # عدد المدارس بالسنوات → by_year[y].schools و by_stage
                     merge_education_years(live_base, met.pop("_years_schools"), met.pop("_stages_schools"), field="schools")
                     edu = live_base["categories"]["education"]["data"]
