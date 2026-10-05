@@ -351,6 +351,100 @@ def merge_education_years(live_base, years, stages, field="students"):
     edu["available_years"] = sorted(yrs)
 
 
+# ---------------- التعيير بالسكان + مؤشر فجوة الخدمات ----------------
+NON_COUNT = {"repi", "parks_area", "green_area"}  # مؤشرات/مساحات لا تُعيَّر بالسكان
+PER = 10000
+GAP_AXES = {  # المحور → المقاييس المكوّنة له (قسم.مقياس)؛ كلها معيّرة بالسكان ثم min-max إلى 0–100
+    "health": {"name": "الصحة", "icon": "🏥", "metrics": ["health.hospitals", "health.beds", "health.phc_centers", "health.pharmacies"]},
+    "education": {"name": "التعليم", "icon": "📚", "metrics": ["education.schools", "education.kindergartens", "education.tvtc_public", "education.classes_public_boys", "education.classes_public_girls"]},
+    "safety": {"name": "الأمن والطوارئ", "icon": "🚨", "metrics": ["security.civil_defense_centers", "security.ambulance_centers", "security.paramedics"]},
+    "municipal": {"name": "الخدمات البلدية", "icon": "🌳", "metrics": ["infrastructure.parks", "infrastructure.plazas", "infrastructure.service_offices", "infrastructure.urban_centers", "sports.municipal_fields"]},
+    "jobs": {"name": "فرص العمل", "icon": "💼", "metrics": ["labor.gosi_total", "labor.gosi_new", "labor.civil_service", "commerce.bank_branches"]},
+}
+REFS = {  # كيف يصل الباحث للرقم في الملف الأصلي
+    "services_sum": "ورقة {sheet} — جمع صفوف المنطقة الإدارية",
+    "region_table": "ورقة {sheet} — صف المنطقة",
+    "momah_csv": "ملف CSV — جمع صفوف الأمانات التابعة للمنطقة",
+    "records_by_region": "ملف سجلّي — عدّ/جمع الصفوف حسب عمود المنطقة",
+    "amanah_xlsx": "جدول الأمانات — جمع الأمانات التابعة للمنطقة",
+    "health_clusters": "عمود Total — تجميع التجمعات الصحية إلى مناطق",
+    "nonprofit_dir": "13 ملفاً إقليمياً — عدّ الكيانات",
+    "students_directorates": "16 ملفاً — جمع عمود الإجمالي الكلي حسب الإدارة التعليمية",
+    "schools_lists": "3 قوائم — عدّ (الرقم الوزاري × المرحلة) حسب الإدارة التعليمية",
+    "repi_series": "ورقة 3 — السلاسل الزمنية حسب المنطقة",
+}
+
+
+def population():
+    pop = base["categories"]["population_housing"]["population"]
+    return {r: float(pop[r]["total"]) for r in P.REGIONS if r in pop and pop[r].get("total")}
+
+
+def normalize(out):
+    """لكل مقياس عددي: القيمة لكل 10 آلاف نسمة + ترتيب المنطقة (1 = الأعلى لكل نسمة)."""
+    pop = population()
+    for ck, c in out["categories"].items():
+        for m in c["metrics"]:
+            if m["key"] in NON_COUNT:
+                m["rank"] = _rank(m["values"])
+                continue
+            per = {r: round(v / pop[r] * PER, 3) for r, v in m["values"].items() if r in pop and pop[r] and v is not None}
+            m["per_10k"] = per
+            m["rank"] = _rank(m["values"])
+            m["rank_per_10k"] = _rank(per)
+
+
+def _rank(vals):
+    order = sorted([r for r in vals if vals[r] is not None], key=lambda r: -vals[r])
+    return {r: i + 1 for i, r in enumerate(order)}
+
+
+def gap_index(out):
+    """درجة 0–100 لكل منطقة في كل محور (متوسط مقاييسه المعيّرة بعد min-max)، والدرجة الكلية متوسط المحاور، والفجوة = 100 − الدرجة."""
+    lookup = {}
+    for ck, c in out["categories"].items():
+        for m in c["metrics"]:
+            if m.get("per_10k"):
+                lookup[f"{ck}.{m['key']}"] = m
+    axes_out, used = {}, {}
+    for ak, ax in GAP_AXES.items():
+        scores = {r: [] for r in P.REGIONS}
+        used[ak] = []
+        for mk in ax["metrics"]:
+            m = lookup.get(mk)
+            if not m:
+                continue
+            used[ak].append({"metric": mk, "name": m["name"], "period": m.get("period")})
+            rk = m["rank_per_10k"]  # درجة رتبية: الأولى لكل نسمة = 100، الأخيرة = 0 (أقل حساسية للقيم الشاذة من min-max)
+            n = len(rk)
+            for r in P.REGIONS:
+                if r in rk and n > 1:
+                    scores[r].append((n - rk[r]) / (n - 1) * 100)
+        axes_out[ak] = {r: round(sum(s) / len(s), 1) for r, s in scores.items() if s}
+    regions = {}
+    for r in P.REGIONS:
+        ax = {ak: axes_out[ak].get(r) for ak in GAP_AXES if r in axes_out.get(ak, {})}
+        score = round(sum(ax.values()) / len(ax), 1) if ax else None
+        regions[r] = {"axes": ax, "score": score, "gap": round(100 - score, 1) if score is not None else None}
+    rank = _rank({r: v["score"] for r, v in regions.items() if v["score"] is not None})
+    for r in regions:
+        regions[r]["rank"] = rank.get(r)
+        regions[r]["axis_rank"] = {ak: _rank(axes_out[ak]).get(r) for ak in axes_out}
+    out["gap_index"] = {"axes": {ak: {"name": a["name"], "icon": a["icon"], "metrics": used[ak]} for ak, a in GAP_AXES.items()},
+                        "regions": regions, "population": population(),
+                        "method": "كل مقياس يُقسَم على سكان المنطقة (تعداد 2022) لكل 10 آلاف نسمة، ثم تُرتَّب المناطق فيه وتُحوَّل الرتبة إلى درجة (الأولى = 100، الأخيرة = 0)، ودرجة المحور متوسط مقاييسه، والدرجة الكلية متوسط المحاور الخمسة، والفجوة = 100 − الدرجة. الدرجة نسبية بين المناطق الثلاث عشرة ولا تقيس كفاية مطلقة."}
+
+
+def methodology(out):
+    rows = []
+    for ck, c in out["categories"].items():
+        for m in c["metrics"]:
+            rows.append({"category": c["name"], "metric": m["name"], "key": m["key"], "source": m.get("source"), "file": (out["manifest"].get(m["indicator"]) or {}).get("source_file"),
+                         "ref": m.get("ref"), "period": m.get("period"), "source_date": m.get("source_date"), "source_url": m.get("source_url"),
+                         "normalized": m["key"] not in NON_COUNT, "runner": m.get("runner")})
+    out["methodology"] = rows
+
+
 def main():
     global live_base
     live_base = json.loads(json.dumps(base))  # نسخة من بيانات النسخة الأولى تُحقن فيها السنوات الجديدة
@@ -396,7 +490,7 @@ def main():
                     met["series"] = {r: [{"period": y, "value": edu[r]["by_year"][y]["students"]}
                                          for y in sorted(edu.get(r, {}).get("by_year", {})) if edu[r]["by_year"][y].get("students")]
                                      for r in P.REGIONS}
-                met = {**met, "indicator": ind_id, "source": reg["sources"][reg["indicators"][ind_id]["source"]]["name"],
+                met = {**met, "indicator": ind_id, "ref": REFS.get(spec[0], "").format(sheet=spec[2].get("sheet", "")), "source": reg["sources"][reg["indicators"][ind_id]["source"]]["name"],
                        "source_url": m.get("source_url"), "source_date": m.get("source_date"), "checked_at": m.get("checked_at"),
                        "runner": reg["sources"][reg["indicators"][ind_id]["source"]]["runner"]}
                 met["values"] = {k: (round(v, 2) if isinstance(v, float) else v) for k, v in met["values"].items() if v is not None}
@@ -414,6 +508,9 @@ def main():
     out["census_note"] = "تعداد السعودية 2022 — لقطة ثابتة من لوحات الهيئة حتى صدور التعداد القادم"
     out["manifest"] = {k: {kk: v.get(kk) for kk in ("name", "source", "status", "source_date", "checked_at", "last_change_at", "source_url", "source_file")}
                        for k, v in man["indicators"].items()}
+    normalize(out)
+    gap_index(out)
+    methodology(out)
     (DATA / "dashboard.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     (DATA / "baseline_live.json").write_text(json.dumps(live_base, ensure_ascii=False), encoding="utf-8")
     ch_path = DATA / "changes.json"

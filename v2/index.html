@@ -890,6 +890,16 @@ body {
 .live-src { font-size: 12px; color: var(--text-muted); margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
 .live-divider { display: flex; align-items: center; gap: 12px; margin: 10px 0 18px; color: var(--text-muted); font-size: 13px; font-weight: 700; }
 .live-divider::before, .live-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.rank-pill { position: absolute; top: 10px; left: 10px; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(100,116,139,0.12); color: var(--text-secondary); }
+.rank-pill.top { background: rgba(5,150,105,0.14); color: var(--green); } .rank-pill.low { background: rgba(220,38,38,0.12); color: var(--red); }
+.profile-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+@media print {
+  .no-print, .live-box .filter-bar { display: none !important; }
+  .profile-print .summary-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .profile-print .data-table { font-size: 10.5px; }
+  .profile-print .detail-card { break-inside: avoid; }
+  @page { size: A4; margin: 12mm; }
+}
 </style>
 </head>
 <body>
@@ -994,7 +1004,10 @@ body {
       <button class="cat-btn" onclick="selectCategory('executive_summary')" data-cat="executive_summary">
       <span class="cat-icon">📋</span> الملخص التنفيذي
     </button>
-    <button class="cat-btn" onclick="selectCategory('comparison')" data-cat="comparison">
+    <button class="cat-btn" onclick="selectCategory('gap')" data-cat="gap"> <span class="cat-icon">🧭</span> مؤشر فجوة الخدمات </button>
+      <button class="cat-btn" onclick="selectCategory('profile')" data-cat="profile"> <span class="cat-icon">📍</span> ملف المنطقة (للطباعة) </button>
+      <button class="cat-btn" onclick="selectCategory('methodology')" data-cat="methodology"> <span class="cat-icon">📐</span> المنهجية والمصادر </button>
+      <button class="cat-btn" onclick="selectCategory('comparison')" data-cat="comparison">
       <span class="cat-icon">⚖️</span> مقارنة المناطق
     </button>
   </div>
@@ -1017,6 +1030,7 @@ body {
           <option value="workers">عدد العاملين</option>
           <option value="hotels">عدد الفنادق</option>
           <option value="mosques">عدد المساجد</option>
+<option value="gap">🧭 فجوة الخدمات (مركّب)</option><option value="gap_health">فجوة الصحة</option><option value="gap_education">فجوة التعليم</option><option value="gap_safety">فجوة الأمن والطوارئ</option><option value="gap_municipal">فجوة الخدمات البلدية</option><option value="gap_jobs">فجوة فرص العمل</option>
         </select>
         <div class="heatmap-legend" id="heatmapLegend" style="display:none;">
           <span>أدنى</span>
@@ -1104,16 +1118,25 @@ function liveHeader() {
   const checked = metrics.map(m => m.checked_at).filter(Boolean).sort().pop();
   const newest = metrics.map(m => m.source_date).filter(Boolean).sort().pop();
   const el = document.getElementById('liveStatus');
-  if (el) el.innerHTML = `${metrics.length} مقياساً حيّاً من المصادر الرسمية · آخر فحص آلي: <b>${dstr(checked)}</b> · أحدث نشر عند المصدر: <b>${dstr(newest)}</b>`;
+  const hrs = checked ? Math.max(0, Math.round((Date.now() - new Date(checked)) / 36e5)) : null;
+  const month = Object.values(LIVE.manifest || {}).filter(m => m.source_date && (Date.now() - new Date(m.source_date)) / 864e5 <= 30).length;
+  if (el) el.innerHTML = `${metrics.length} مقياساً حيّاً من ${Object.keys(LIVE.manifest || {}).length} مصدراً رسمياً · آخر فحص آلي قبل <b>${hrs == null ? '—' : hrs < 24 ? hrs + ' ساعة' : Math.round(hrs / 24) + ' يوماً'}</b> · <b>${month}</b> مصادر نُشر لها جديد خلال 30 يوماً · أحدث نشر: <b>${dstr(newest)}</b>`;
   const c = document.getElementById('chgCount'); if (c) c.textContent = CHANGES.length || '';
 }
 
+let perCapita = false;  // وضع العرض: العدد أم لكل 10 آلاف نسمة
+function mval(m, r) {  // قيمة المقياس بحسب الوضع
+  if (perCapita && m.per_10k) { if (r) return m.per_10k[r]; const pop = LIVE.gap_index ? Object.values(LIVE.gap_index.population).reduce((a, b) => a + b, 0) : 0; return pop ? m.total / pop * 10000 : null; }
+  return r ? m.values[r] : m.total;
+}
+function mfmt(m, v) { if (v == null) return '—'; if (m.key === 'repi' || (perCapita && m.per_10k)) return Number(v).toLocaleString('ar-SA', { maximumFractionDigits: v < 10 ? 2 : 1 }); return formatNum(v); }
 function liveCard(m, r, i, active) {
-  const v = r ? m.values[r] : m.total;
-  const val = (v == null) ? '—' : (m.key === 'repi' ? Number(v).toLocaleString('ar-SA', { maximumFractionDigits: 2 }) : formatNum(v));
+  const v = mval(m, r);
+  const rk = r ? ((perCapita && m.rank_per_10k) ? m.rank_per_10k[r] : (m.rank || {})[r]) : null;
   return `<div class="summary-card live-card ${active ? 'active' : ''}" data-i="${i}" title="اضغطي لعرض التوزيع حسب المناطق">
-    <div class="card-value">${val}</div>
-    <div class="card-label">${m.name}</div>
+    ${rk ? `<span class="rank-pill ${rk <= 3 ? 'top' : rk >= 11 ? 'low' : ''}">الترتيب ${rk}/13</span>` : ''}
+    <div class="card-value">${mfmt(m, v)}</div>
+    <div class="card-label">${m.name}${perCapita && m.per_10k ? ' <small>لكل 10 آلاف نسمة</small>' : ''}</div>
     <div class="live-meta"><span class="live-dot ${freshClass(m.source_date)}"></span> بيانات <b>${m.period || '—'}</b> · نُشر عند المصدر ${dstr(m.source_date)}</div>
   </div>`;
 }
@@ -1130,6 +1153,10 @@ function injectLive(cat, r) {
   let html = `<div class="live-box fade-in">
     <div class="live-head"><h3>🔄 أحدث البيانات من المصدر${r ? ' — ' + r : ' — إجمالي المملكة'}</h3>
       <span>${c.metrics.length} مقياساً · أحدث نشر: ${dstr(f.latest_source_date)} · آخر فحص آلي: ${dstr(f.last_checked)}</span></div>
+    <div class="filter-bar"><label>العرض:</label>
+      <button class="filter-btn ${perCapita ? '' : 'active'}" onclick="perCapita=false;renderContent()">العدد</button>
+      <button class="filter-btn ${perCapita ? 'active' : ''}" onclick="perCapita=true;renderContent()">لكل 10 آلاف نسمة</button>
+      <span style="font-size:11.5px;color:var(--text-muted)">التعيير بسكان تعداد 2022 يُظهر المناطق الصغيرة التي يخفيها العدد المطلق</span></div>
     <div class="summary-grid" id="liveCards">${c.metrics.map((m, i) => liveCard(m, r, i, i === 0)).join('')}</div>
     <div class="detail-grid"><div class="detail-card full-width">
       <h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div>
@@ -1143,14 +1170,17 @@ function injectLive(cat, r) {
   const draw = i => {
     const m = c.metrics[i];
     document.querySelectorAll('#liveCards .live-card').forEach(x => x.classList.toggle('active', +x.dataset.i === i));
-    document.getElementById('liveChartTitle').innerHTML = `📊 ${m.name} حسب المناطق <small style="font-weight:400;color:var(--text-muted)">· بيانات ${m.period || ''}</small>`;
-    document.getElementById('liveSrc').innerHTML = `<span>📋 المصدر: ${m.source}</span> <span>· نُشر ${dstr(m.source_date)} (${freshWord(m.source_date)})</span>${m.source_url ? ` · <a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">🔗 الملف الأصلي</a>` : ''}`;
-    const regs = [...LIVE.regions].sort((a, b) => (m.values[b] || 0) - (m.values[a] || 0));
+    const pc = perCapita && m.per_10k;
+    const vals = pc ? m.per_10k : m.values;
+    document.getElementById('liveChartTitle').innerHTML = `📊 ${m.name} حسب المناطق${pc ? ' — لكل 10 آلاف نسمة' : ''} <small style="font-weight:400;color:var(--text-muted)">· بيانات ${m.period || ''}</small>`;
+    const mf = (LIVE.manifest || {})[m.indicator] || {};
+    document.getElementById('liveSrc').innerHTML = `<span>📋 المصدر: ${m.source}</span> <span>· الملف: ${mf.source_file || '—'}</span> ${m.ref ? `<span>· الموضع: ${m.ref}</span>` : ''} <span>· نُشر ${dstr(m.source_date)} (${freshWord(m.source_date)})</span>${m.source_url ? ` · <a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">🔗 الملف الأصلي</a>` : ''}`;
+    const regs = [...LIVE.regions].sort((a, b) => (vals[b] || 0) - (vals[a] || 0));
     if (charts.liveChart) charts.liveChart.destroy();
     charts.liveChart = new Chart(document.getElementById('liveChart'), {
       type: 'bar',
-      data: { labels: regs, datasets: [{ data: regs.map(x => m.values[x] ?? null), backgroundColor: regs.map(x => x === r ? '#d97706' : '#0e7a4a'), borderRadius: 6 }] },
-      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: x => ' ' + (m.key === 'repi' ? x.raw : formatNum(x.raw)) } } },
+      data: { labels: regs, datasets: [{ data: regs.map(x => vals[x] ?? null), backgroundColor: regs.map(x => x === r ? '#d97706' : '#0e7a4a'), borderRadius: 6 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: x => ' ' + mfmt(m, x.raw) } } },
         scales: { x: { ticks: { color: '#475569', font: { family: 'Tajawal', size: 10 }, callback: v => shortNum(v) }, grid: { color: 'rgba(0,0,0,0.06)' } }, y: { ticks: { color: '#475569', font: { family: 'Tajawal', size: 12 } }, grid: { display: false } } } }
     });
     const sc = document.getElementById('liveSeriesCard');
@@ -1171,6 +1201,68 @@ function injectLive(cat, r) {
   };
   document.getElementById('liveCards').onclick = e => { const el = e.target.closest('.live-card'); if (el) draw(+el.dataset.i); };
   draw(0);
+}
+
+// ===== مؤشر فجوة الخدمات =====
+const AXIS_COLORS = { health: '#dc2626', education: '#2563eb', safety: '#d97706', municipal: '#059669', jobs: '#7c3aed' };
+function renderGap() {
+  const content = document.getElementById('dataContent');
+  const G = LIVE && LIVE.gap_index; if (!G) { content.innerHTML = '<div class="no-data">المؤشر غير متاح</div>'; return; }
+  const regs = Object.entries(G.regions).filter(([, v]) => v.score != null).sort((a, b) => a[1].score - b[1].score); // الأكبر فجوة أولاً
+  const r = selectedRegion;
+  let html = `<div class="fade-in"><h2 style="font-size:20px;margin-bottom:6px;">🧭 مؤشر فجوة الخدمات${r ? ' — ' + r : ''}</h2>
+    <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">${G.method}</p>`;
+  if (r && G.regions[r]) {
+    const g = G.regions[r];
+    html += '<div class="summary-grid">' + summaryCard('🧭', g.gap + ' / 100', 'الفجوة الكلية') + summaryCard('🏅', g.rank + ' من 13', 'ترتيب المنطقة (1 = الأفضل تغطية)') +
+      Object.entries(G.axes).map(([ak, ax]) => summaryCard(ax.icon, (g.axes[ak] ?? 0).toFixed(0) + ' / 100', `تغطية ${ax.name} (الترتيب ${g.axis_rank[ak]})`)).join('') + '</div>';
+    const weakest = Object.entries(g.axes).sort((a, b) => a[1] - b[1]).slice(0, 3);
+    html += insightBox(`أكبر ثلاث فجوات في ${r}: ` + weakest.map(([ak, v]) => `<b>${G.axes[ak].name}</b> (تغطية ${v.toFixed(0)}/100، الترتيب ${g.axis_rank[ak]} من 13)`).join('، ') + '.');
+  }
+  html += `<div class="detail-grid"><div class="detail-card full-width"><h3>📊 تغطية الخدمات حسب المنطقة والمحور (0 = أدنى منطقة، 100 = أعلى منطقة)</h3><div class="chart-container" style="height:420px"><canvas id="gapChart"></canvas></div></div></div>`;
+  html += '<div class="detail-card"><h3>🏅 ترتيب المناطق (الأكبر فجوة أولاً)</h3><table class="rank-table"><tr><th>#</th><th>المنطقة</th><th>الفجوة</th>' + Object.values(G.axes).map(a => `<th>${a.icon} ${a.name}</th>`).join('') + '<th>السكان</th></tr>';
+  regs.forEach(([rg, g], i) => { html += `<tr class="${rg === r ? 'rank-1' : ''}"><td>${i + 1}</td><td><a href="#" onclick="selectRegion('${rg}');return false;">${rg}</a></td><td><b>${g.gap}</b></td>` + Object.keys(G.axes).map(ak => `<td>${(g.axes[ak] ?? 0).toFixed(0)}</td>`).join('') + `<td>${formatNum(G.population[rg])}</td></tr>`; });
+  html += '</table></div>';
+  html += '<div class="detail-card" style="margin-top:16px"><h3>🧩 مكوّنات كل محور</h3>' + Object.entries(G.axes).map(([ak, a]) => `<p style="font-size:13px;margin:6px 0"><b>${a.icon} ${a.name}:</b> ${a.metrics.map(m => m.name + (m.period ? ` (${m.period})` : '')).join(' · ')}</p>`).join('') + '</div></div>';
+  content.innerHTML = html;
+  const labels = regs.map(x => x[0]);
+  makeBarChart('gapChart', labels, Object.entries(G.axes).map(([ak, a]) => ({ label: a.name, data: regs.map(([, g]) => g.axes[ak] ?? 0), backgroundColor: AXIS_COLORS[ak], borderRadius: 3 })), { chartOptions: { indexAxis: 'y', scales: { x: { stacked: false, max: 100 }, y: {} } } });
+}
+
+// ===== ملف المنطقة للطباعة =====
+function renderProfile() {
+  const content = document.getElementById('dataContent');
+  const r = selectedRegion;
+  if (!r) { content.innerHTML = `<div class="fade-in"><h2 style="font-size:20px;margin-bottom:10px">📍 ملف المنطقة</h2><p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">اختاري منطقة من الخريطة أو من القائمة التالية، ثم اضغطي «طباعة / PDF». الملف صفحتان: المؤشرات معيّرة بالسكان، ترتيب المنطقة، وأبرز الفجوات.</p><div class="region-overview">` + DATA.regions.map(x => `<div class="region-overview-card" onclick="selectRegion('${x}')"><div class="ro-name">${x}</div></div>`).join('') + '</div></div>'; return; }
+  const G = LIVE.gap_index, g = G.regions[r], pop = G.population[r];
+  let html = `<div class="fade-in profile-print"><div class="profile-head"><div><h2 style="font-size:24px;margin:0">📍 ملف منطقة ${r}</h2><div style="color:var(--text-muted);font-size:13px">نبض المناطق · أُعدّ آلياً في ${dstr(new Date().toISOString())} · السكان ${formatNum(pop)} نسمة (تعداد 2022)</div></div>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ طباعة / PDF</button></div>`;
+  html += '<div class="summary-grid">' + summaryCard('🧭', g.gap + ' / 100', 'فجوة الخدمات الكلية') + summaryCard('🏅', g.rank + ' من 13', 'الترتيب بين المناطق') +
+    Object.entries(G.axes).map(([ak, ax]) => summaryCard(ax.icon, (g.axes[ak] ?? 0).toFixed(0), `تغطية ${ax.name} · الترتيب ${g.axis_rank[ak]}`)).join('') + '</div>';
+  const weakest = Object.entries(g.axes).sort((a, b) => a[1] - b[1]).slice(0, 3);
+  html += insightBox(`<b>أبرز ثلاث فجوات:</b> ` + weakest.map(([ak, v]) => `${G.axes[ak].name} (${v.toFixed(0)}/100، الترتيب ${g.axis_rank[ak]} من 13)`).join('، ') + '. الدرجة نسبية بين المناطق الثلاث عشرة بعد التعيير بالسكان.');
+  // أدنى المقاييس ترتيباً لكل نسمة
+  const all = Object.entries(LIVE.categories).flatMap(([ck, c]) => c.metrics.filter(m => m.per_10k && m.rank_per_10k).map(m => ({ ...m, cat: c.name })));
+  const worst = all.filter(m => m.rank_per_10k[r] >= 11).sort((a, b) => b.rank_per_10k[r] - a.rank_per_10k[r]).slice(0, 6);
+  if (worst.length) html += '<div class="detail-card" style="margin-bottom:16px"><h3>🔻 مقاييس تقع فيها المنطقة ضمن الثلاث الأدنى لكل نسمة</h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>لكل 10 آلاف نسمة</th><th>الترتيب</th><th>بيانات</th></tr>' + worst.map(m => `<tr><td>${m.cat}</td><td>${m.name}</td><td>${m.per_10k[r].toLocaleString('ar-SA', { maximumFractionDigits: 2 })}</td><td>${m.rank_per_10k[r]} / 13</td><td>${m.period || ''}</td></tr>`).join('') + '</table></div>';
+  html += '<div class="detail-card"><h3>📋 كل المؤشرات الحيّة للمنطقة</h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>العدد</th><th>لكل 10 آلاف نسمة</th><th>الترتيب</th><th>بيانات</th><th>نشر المصدر</th></tr>';
+  Object.entries(LIVE.categories).forEach(([ck, c]) => c.metrics.forEach(m => { const v = m.values[r]; html += `<tr><td>${c.name}</td><td>${m.name}</td><td>${v == null ? '—' : (m.key === 'repi' ? v : formatNum(v))}</td><td>${m.per_10k ? m.per_10k[r].toLocaleString('ar-SA', { maximumFractionDigits: 2 }) : '—'}</td><td>${(m.rank_per_10k || m.rank || {})[r] || '—'} / 13</td><td>${m.period || ''}</td><td>${dstr(m.source_date)}</td></tr>`; }));
+  html += '</table></div><p style="font-size:11px;color:var(--text-muted);margin-top:10px">المصادر: ' + Object.values(LIVE.sources).map(s => s.name).join(' · ') + '. التعيير بسكان تعداد 2022. التفاصيل في صفحة المنهجية.</p></div>';
+  content.innerHTML = html;
+}
+
+// ===== المنهجية والمصادر =====
+function renderMethodology() {
+  const content = document.getElementById('dataContent');
+  const M = LIVE.methodology || [];
+  let html = `<div class="fade-in"><h2 style="font-size:20px;margin-bottom:8px">📐 المنهجية والمصادر</h2>
+  <div class="insight-box"><h4>كيف تُجمع الأرقام</h4><p>لكل مقياس مصدر رسمي واحد محدد بملفه وموضعه داخل الملف. برنامج جامع يفحص المصادر يومياً (هيئة الإحصاء ووزارة البلديات من السحابة، ومنصة سدايا من جهاز الموظف لأنها تمنع السحب الآلي الخارجي)، وينزّل الملف فقط إذا تغيّر تاريخ نشره أو محتواه، ثم تحوّله محلّلات مخصصة إلى قيم للمناطق الإدارية الثلاث عشرة. كل رقم يحمل سنة بياناته وتاريخ نشر الجهة له ورابط الملف الأصلي.</p>
+  <p style="margin-top:8px"><b>التعيير:</b> القيم «لكل 10 آلاف نسمة» تُقسم على سكان المنطقة في تعداد 2022. <b>مؤشر الفجوة:</b> ${LIVE.gap_index ? LIVE.gap_index.method : ''}</p>
+  <p style="margin-top:8px"><b>حدود:</b> تاريخ البيانات يتبع الجهة؛ بعض الجهات تنشر سنوياً بتأخر يصل عشرة أشهر. تعداد السكان ثابت حتى التعداد القادم. المقاييس الملفّية (سجل لكل منشأة) تُعدّ كما نشرتها الجهة دون تنقية.</p></div>
+  <div class="detail-card"><h3>📋 سجل المقاييس (${M.length})</h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>الجهة</th><th>الملف</th><th>الموضع في الملف</th><th>بيانات</th><th>نشر المصدر</th><th>التحديث</th><th>رابط</th></tr>`;
+  M.forEach(m => { html += `<tr><td>${m.category}</td><td>${m.metric}</td><td>${m.source}</td><td style="font-size:11px;direction:ltr;text-align:right">${m.file || '—'}</td><td style="font-size:11px">${m.ref || '—'}</td><td>${m.period || '—'}</td><td>${dstr(m.source_date)}</td><td>${m.runner === 'cloud' ? 'يومي آلي' : 'من الجهاز'}</td><td>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">🔗</a>` : ''}</td></tr>`; });
+  html += '</table></div></div>';
+  content.innerHTML = html;
 }
 
 function renderChanges() {
@@ -1298,7 +1390,7 @@ function renderContent() {
     content.style.display = 'none';
     return;
   }
-  if (selectedCategory === 'changes') { welcome.style.display = 'none'; content.style.display = 'block'; Object.values(charts).forEach(c => c.destroy()); charts = {}; renderChanges(); return; }
+  if (['changes','gap','profile','methodology'].includes(selectedCategory)) { welcome.style.display = 'none'; content.style.display = 'block'; Object.values(charts).forEach(c => c.destroy()); charts = {}; ({changes: renderChanges, gap: renderGap, profile: renderProfile, methodology: renderMethodology})[selectedCategory](); return; }
   if (selectedCategory === 'executive_summary' || selectedCategory === 'comparison') {
     welcome.style.display = 'none';
     content.style.display = 'block';
@@ -3015,6 +3107,7 @@ const REGION_COLORS = {
 };
 
 function applyHeatMap(indicator) {
+  if (indicator && indicator.startsWith('gap') && LIVE && LIVE.gap_index) { const ax = indicator === 'gap' ? null : indicator.slice(4); HEAT_CONFIGS[indicator] = { label: ax ? 'فجوة ' + LIVE.gap_index.axes[ax].name : 'فجوة الخدمات', get: r => { const g = LIVE.gap_index.regions[r]; if (!g) return 0; return ax ? Math.round(100 - (g.axes[ax] ?? 0)) : (g.gap ?? 0); } }; }
   heatMapIndicator = indicator;
   const legend = document.getElementById('heatmapLegend');
   const resetBtn = document.getElementById('heatmapReset');
