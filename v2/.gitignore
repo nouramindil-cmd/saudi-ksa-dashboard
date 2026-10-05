@@ -2,3 +2,6 @@ __pycache__/
 *.log
 momah_titles.txt
 momah_rows.json
+
+_shot_*.png
+_*.json
