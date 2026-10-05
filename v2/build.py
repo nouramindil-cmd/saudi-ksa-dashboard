@@ -159,6 +159,45 @@ def students_directorates(dirpath):
              "series": series, "_years": years, "_stages": stages}]
 
 
+def schools_lists(dirpath):
+    """قوائم المدارس (حكومي/أهلي/عالمي) — صف لكل مدرسة×مرحلة: سنة، إدارة، رقم وزاري، مرحلة.
+    نعدّ (رقم وزاري، مرحلة) الفريدة لكل سنة ومنطقة ومرحلة، وهو تعريف «عدد المدارس» في النسخة الأولى (مجموع المراحل)."""
+    import openpyxl
+    seen = {}  # year -> region -> stage -> set(ids)
+    for f in sorted(Path(dirpath).glob("*")):
+        wb = openpyxl.load_workbook(f, read_only=True, data_only=True)
+        for sn in wb.sheetnames:
+            rows = wb[sn].iter_rows(values_only=True)
+            hdr = None
+            for r in rows:
+                cells = [str(c).strip() if c is not None else "" for c in r]
+                if hdr is None:
+                    if any("الإدارة" in c for c in cells) and any("المرحلة" in c for c in cells):
+                        hdr = cells
+                        yj = next((j for j, c in enumerate(hdr) if "ميلادي" in c), None)
+                        dj = next(j for j, c in enumerate(hdr) if "الإدارة" in c)
+                        ij = next((j for j, c in enumerate(hdr) if "الرقم الوزاري" in c), None)
+                        sj = next(j for j, c in enumerate(hdr) if "المرحلة" in c)
+                    continue
+                reg_ = DIRECTORATE_REGION.get(cells[dj]) or P.norm_region(cells[dj])
+                st = STAGE_NAMES.get(cells[sj])
+                if not reg_ or not st:
+                    continue
+                y = str(int(P.num(cells[yj]))) if yj is not None and P.num(cells[yj]) else "0"
+                sid = cells[ij] if ij is not None else cells[dj] + "|" + str(r)
+                seen.setdefault(y, {}).setdefault(reg_, {}).setdefault(st, set()).add(sid)
+        wb.close()
+    seen.pop("0", None)
+    if not seen:
+        return []
+    years = {y: {r: sum(len(s) for s in st.values()) for r, st in regs.items()} for y, regs in seen.items()}
+    stages = {y: {r: {k: len(s) for k, s in st.items()} for r, st in regs.items()} for y, regs in seen.items()}
+    latest = max(years)
+    vals = {r: float(years[latest].get(r, 0)) for r in P.REGIONS}
+    return [{"key": "schools", "name": "المدارس (مدرسة×مرحلة، كل القطاعات)", "values": vals, "period": latest,
+             "_years_schools": years, "_stages_schools": stages}]
+
+
 S = lambda ind, sheet, cols: ("services_sum", ind, dict(sheet=sheet, cols=cols))  # noqa: E731
 T = lambda ind, sheet, cols: ("region_table", ind, dict(sheet=sheet, cols=cols))  # noqa: E731
 M = lambda ind, cols: ("momah_csv", ind, dict(cols=cols))  # noqa: E731
@@ -174,8 +213,7 @@ METRICS = {
         S("services_statistics", "1-1", {"*مدارس": ("kindergartens", "رياض الأطفال")}),
         S("services_statistics", "1-6", {"المعاهد الحكومية": ("tvtc_public", "معاهد التدريب التقني الحكومية"), "المعاهد الاهلية": ("tvtc_private", "معاهد التدريب التقني الأهلية")}),
         ("students_directorates", "odp_students_directorates", {}),
-        ("schools_by_directorate", "odp_schools_public", dict(key="schools_public_2025", name="مدارس التعليم العام الحكومي (مدرسة×مرحلة)")),
-        ("schools_by_directorate", "odp_schools_private", dict(key="schools_private_2025", name="مدارس التعليم الأهلي (مدرسة×مرحلة)")),
+        ("schools_lists", "odp_schools_lists", {}),
     ],
     "health": [
         T("health_establishments", "1", {"الإجمالي": ("hospitals", "المستشفيات"), "حكومي": ("hospitals_gov", "مستشفيات حكومية"), "خاص": ("hospitals_private", "مستشفيات خاصة")}),
@@ -282,6 +320,8 @@ def run_metric(spec):
             out = nonprofit_dir(path)
         elif fn == "students_directorates":
             out = students_directorates(path)
+        elif fn == "schools_lists":
+            out = schools_lists(path)
         elif fn == "repi_series":
             out = repi_series(path)
         else:
@@ -291,8 +331,8 @@ def run_metric(spec):
         return ind_id, None, f"error: {e}"
 
 
-def merge_education_years(live_base, years, stages):
-    """يضيف سنوات الطلاب الجديدة إلى categories.education.data[region].by_year في نسخة baseline الحيّة."""
+def merge_education_years(live_base, years, stages, field="students"):
+    """يضيف سنوات (الطلاب أو المدارس) الجديدة إلى categories.education.data[region].by_year في نسخة baseline الحيّة."""
     edu = live_base["categories"].get("education")
     if not edu:
         return
@@ -302,10 +342,10 @@ def merge_education_years(live_base, years, stages):
             node = edu["data"].setdefault(reg_, {"by_year": {}})
             by = node.setdefault("by_year", {})
             cur = by.setdefault(y, {"schools": 0, "students": 0, "teachers": 0, "admins": 0, "classes": 0, "by_stage": {}})
-            cur["students"] = int(round(total))
+            cur[field] = int(round(total))
             cur.setdefault("by_stage", {})
             for st, v in stages.get(y, {}).get(reg_, {}).items():
-                cur["by_stage"].setdefault(st, {"schools": 0, "students": 0, "teachers": 0})["students"] = int(round(v))
+                cur["by_stage"].setdefault(st, {"schools": 0, "students": 0, "teachers": 0})[field] = int(round(v))
             cur["_live"] = True
         yrs.add(y)
     edu["available_years"] = sorted(yrs)
@@ -344,6 +384,12 @@ def main():
                         entry["metrics"].append({**pm, "parse_status": status})
                 continue
             for met in metrics:
+                if "_years_schools" in met:  # عدد المدارس بالسنوات → by_year[y].schools و by_stage
+                    merge_education_years(live_base, met.pop("_years_schools"), met.pop("_stages_schools"), field="schools")
+                    edu = live_base["categories"]["education"]["data"]
+                    met["series"] = {r: [{"period": y, "value": edu[r]["by_year"][y]["schools"]}
+                                         for y in sorted(edu.get(r, {}).get("by_year", {})) if edu[r]["by_year"][y].get("schools")]
+                                     for r in P.REGIONS}
                 if "_years" in met:  # دمج السنوات الجديدة في بيانات النسخة الأولى حتى تتحدث رسومها القديمة (مقارنة الطلاب حسب السنة...)
                     merge_education_years(live_base, met.pop("_years"), met.pop("_stages"))
                     edu = live_base["categories"]["education"]["data"]  # السلسلة = سنوات النسخة الأولى + السنوات الحيّة

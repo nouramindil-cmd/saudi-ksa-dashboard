@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T15:45:48Z",
+  "generated_at": "2026-10-05T15:53:41Z",
   "indicators": {
     "labor_registry": {
       "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -253,34 +253,6 @@
       "status": "unchanged",
       "last_change_at": "2026-10-04T17:47:15Z"
     },
-    "odp_schools_public": {
-      "name": "مدارس التعليم العام الحكومي (قائمة بالمناطق)",
-      "category": "education",
-      "source": "odp",
-      "checked_at": "2026-10-04T17:50:06Z",
-      "source_url": "https://open.data.gov.sa/ar/datasets/view/1472d4e9-a1cc-413f-98b1-41103b7e6ac3",
-      "source_file": "Names of Government General Education Schools.xlsx",
-      "source_date": "2026-08-20",
-      "sha256": "5abee35d783afeaf4b69b1479239654e28f3eefae139e84e5e9dc9a6d7a4e237",
-      "local_path": "data/raw/odp_schools_public/Names_of_Government_General_Education_Schools.xlsx",
-      "fetched_at": "2026-10-04T17:51:07Z",
-      "status": "updated",
-      "last_change_at": "2026-10-04T17:51:07Z"
-    },
-    "odp_schools_private": {
-      "name": "مدارس التعليم الخاص (قائمة بالمناطق)",
-      "category": "education",
-      "source": "odp",
-      "checked_at": "2026-10-04T17:51:07Z",
-      "source_url": "https://open.data.gov.sa/ar/datasets/view/661d71e1-2678-435d-acec-501cd3009c2c",
-      "source_file": "Names of Private education Schools.xlsx",
-      "source_date": "2026-08-20",
-      "sha256": "8e3c62b2f1a41eab2d29c5f0c08c3e930b74ec692166477d61fd8fa1dbd7b659",
-      "local_path": "data/raw/odp_schools_private/Names_of_Private_education_Schools.xlsx",
-      "fetched_at": "2026-10-04T17:51:08Z",
-      "status": "updated",
-      "last_change_at": "2026-10-04T17:51:08Z"
-    },
     "odp_health_visits": {
       "name": "زيارات الرعاية الصحية الأولية حسب التجمعات",
       "category": "health",
@@ -371,6 +343,20 @@
       "fetched_at": "2026-10-05T15:45:48Z",
       "status": "updated",
       "last_change_at": "2026-10-05T15:45:48Z"
+    },
+    "odp_schools_lists": {
+      "name": "قوائم المدارس (حكومي + أهلي + عالمي وأجنبي) حسب الإدارة التعليمية والمرحلة",
+      "category": "education",
+      "source": "odp",
+      "checked_at": "2026-10-05T15:53:23Z",
+      "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=أسماء مدارس التعليم",
+      "source_file": "3 ملفات: أسماء مدارس التعليم",
+      "source_date": "2026-08-20",
+      "sha256": "70ad63c452ef3acea5789e11e347a569b35cab24059b2d751b4401c0013ff794",
+      "local_path": "data/raw/odp_schools_lists",
+      "fetched_at": "2026-10-05T15:53:41Z",
+      "status": "updated",
+      "last_change_at": "2026-10-05T15:53:41Z"
     }
   }
 }

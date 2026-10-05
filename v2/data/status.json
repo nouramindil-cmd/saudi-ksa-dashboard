@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-05T15:48:31Z",
+ "built_at": "2026-10-05T15:54:45Z",
  "manifest": {
   "labor_registry": {
    "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -181,26 +181,6 @@
    "source_url": "https://open.data.gov.sa/ar/datasets/view/d93d32ab-530b-4dd4-b27f-a42a25341786",
    "source_file": "Sports Facilities.xlsx"
   },
-  "odp_schools_public": {
-   "name": "مدارس التعليم العام الحكومي (قائمة بالمناطق)",
-   "source": "odp",
-   "status": "updated",
-   "source_date": "2026-08-20",
-   "checked_at": "2026-10-04T17:50:06Z",
-   "last_change_at": "2026-10-04T17:51:07Z",
-   "source_url": "https://open.data.gov.sa/ar/datasets/view/1472d4e9-a1cc-413f-98b1-41103b7e6ac3",
-   "source_file": "Names of Government General Education Schools.xlsx"
-  },
-  "odp_schools_private": {
-   "name": "مدارس التعليم الخاص (قائمة بالمناطق)",
-   "source": "odp",
-   "status": "updated",
-   "source_date": "2026-08-20",
-   "checked_at": "2026-10-04T17:51:07Z",
-   "last_change_at": "2026-10-04T17:51:08Z",
-   "source_url": "https://open.data.gov.sa/ar/datasets/view/661d71e1-2678-435d-acec-501cd3009c2c",
-   "source_file": "Names of Private education Schools.xlsx"
-  },
   "odp_health_visits": {
    "name": "زيارات الرعاية الصحية الأولية حسب التجمعات",
    "source": "odp",
@@ -270,6 +250,16 @@
    "last_change_at": "2026-10-05T15:45:48Z",
    "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=البيانات التعليمية الخاصة بالطلاب بالإدارة العامة للتعليم",
    "source_file": "16 ملفات: البيانات التعليمية الخاصة بالطلاب بالإدارة العامة للتعليم"
+  },
+  "odp_schools_lists": {
+   "name": "قوائم المدارس (حكومي + أهلي + عالمي وأجنبي) حسب الإدارة التعليمية والمرحلة",
+   "source": "odp",
+   "status": "updated",
+   "source_date": "2026-08-20",
+   "checked_at": "2026-10-05T15:53:23Z",
+   "last_change_at": "2026-10-05T15:53:41Z",
+   "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=أسماء مدارس التعليم",
+   "source_file": "3 ملفات: أسماء مدارس التعليم"
   }
  },
  "log": [
@@ -310,12 +300,7 @@
   },
   {
    "category": "education",
-   "indicator": "odp_schools_public",
-   "status": "ok"
-  },
-  {
-   "category": "education",
-   "indicator": "odp_schools_private",
+   "indicator": "odp_schools_lists",
    "status": "ok"
   },
   {
