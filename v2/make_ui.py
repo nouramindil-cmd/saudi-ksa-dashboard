@@ -279,6 +279,7 @@ function injectLive(cat, r) {
   if (!LIVE || !LIVE.categories[cat]) return;
   const c0 = LIVE.categories[cat]; const content = document.getElementById('dataContent');
   const c = { ...c0, metrics: c0.metrics.filter(inYear) };
+  if (yearFilter) [...content.children].forEach(el => { el.style.display = 'none'; });  // محتوى النسخة الأولى لا يحمل سنة موحّدة فيُخفى عند الفلترة
   if (yearFilter && !c.metrics.length) { content.insertAdjacentHTML('afterbegin', `<div class="live-box"><div class="live-head"><h3>أحدث البيانات من المصدر</h3><span>لا مقاييس لسنة ${yearFilter} في هذا القسم</span></div></div>`); return; }
   if (!c.metrics.length) { content.insertAdjacentHTML('afterbegin', `<div class="live-box"><div class="live-head"><h3>أحدث البيانات من المصدر</h3><span>لا مصدر آلي لهذا القسم بعد — البيانات أدناه من النسخة الأولى</span></div></div>`); return; }
   const f = c.freshness || {};
@@ -287,7 +288,7 @@ function injectLive(cat, r) {
     ${(() => { const groups = []; c.metrics.forEach((m, i) => { const g = m.group || ''; let G = groups.find(x => x.g === g); if (!G) { G = { g, items: [] }; groups.push(G); } G.items.push([m, i]); }); return `<div id="liveCards">` + groups.map(G => `${G.g ? `<div class="live-group">${G.g}</div>` : ''}<div class="summary-grid">${G.items.map(([m, i]) => liveCard(m, r, i, i === 0)).join('')}</div>`).join('') + `</div>`; })()}
     <div class="detail-grid"><div class="detail-card full-width"><h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div><div class="live-src" id="liveSrc"></div></div>
     <div class="detail-card full-width" id="liveSeriesCard" style="display:none"><h3 id="liveSeriesTitle"></h3><div class="chart-container" style="height:280px"><canvas id="liveSeries"></canvas></div></div></div>
-    <div class="live-divider"></div></div>`);
+    ${yearFilter ? '' : '<div class="live-divider"></div>'}</div>`);
   const draw = i => {
     const m = c.metrics[i]; const vals = m.values;
     document.querySelectorAll('#liveCards .live-card').forEach(x => x.classList.toggle('active', +x.dataset.i === i));
@@ -300,7 +301,7 @@ function injectLive(cat, r) {
       options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => ' ' + fmtv(m, x.raw) } } }, scales: { x: { ticks: { callback: v => shortNum(v) } }, y: { grid: { display: false }, ticks: { font: { size: 12.5 } } } } } });
     const sc = document.getElementById('liveSeriesCard'); if (charts.liveSeries) { charts.liveSeries.destroy(); delete charts.liveSeries; }
     if (m.series) {
-      sc.style.display = 'block'; const show = r ? [r] : ['الرياض', 'مكة المكرمة', 'المنطقة الشرقية', 'عسير']; const labels = (m.series[show[0]] || []).map(p => p.period);
+      sc.style.display = 'block'; const show = r ? [r] : ['الرياض', 'مكة المكرمة', 'المنطقة الشرقية', 'عسير']; const labels = (m.series[show[0]] || []).map(p => p.period).filter(l => !yearFilter || String(l).includes(yearFilter));
       document.getElementById('liveSeriesTitle').innerHTML = `${m.name} — السلسلة الزمنية${r ? ' — ' + r : ''} <small>· تُضاف الفترات الجديدة تلقائياً عند نشرها</small>`;
       charts.liveSeries = new Chart(document.getElementById('liveSeries'), { type: 'line', data: { labels, datasets: show.map((rg, i) => ({ label: rg, data: labels.map(l => { const p = (m.series[rg] || []).find(q => q.period === l); return p ? p.value : null; }), borderColor: PALETTE[i], backgroundColor: PALETTE[i] })) },
         options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: show.length > 1, rtl: true } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { ticks: { callback: v => shortNum(v) } } } } });

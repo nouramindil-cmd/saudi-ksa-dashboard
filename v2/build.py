@@ -652,9 +652,13 @@ def main():
                         entry["metrics"].append({**pm, "parse_status": status})
                 continue
             for met in metrics:
+                fname = Path(raw_path(ind_id) or "").name
                 if not met.get("period"):  # سنة البيانات من اسم الملف عند غيابها داخل الجدول (مثل نشرة المساكن 2025)
-                    yrs = re.findall(r"(20[1-3]\d)", Path(raw_path(ind_id) or "").name)
+                    yrs = re.findall(r"(20[1-3]\d)", fname)
                     met["period"] = max(yrs) if yrs else None
+                q = re.search(r"Q([1-4])", fname)
+                if q and re.fullmatch(r"20[1-3]\d", str(met.get("period") or "")):  # نشرة ربعية: أضف الربع من اسم الملف
+                    met["period"] = f"{met['period']} {['الربع الأول', 'الربع الثاني', 'الربع الثالث', 'الربع الرابع'][int(q.group(1)) - 1]}"
                 if "_years_schools" in met:  # عدد المدارس بالسنوات → by_year[y].schools و by_stage
                     merge_education_years(live_base, met.pop("_years_schools"), met.pop("_stages_schools"), field="schools")
                     edu = live_base["categories"]["education"]["data"]
