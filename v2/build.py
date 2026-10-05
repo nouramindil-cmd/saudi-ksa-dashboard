@@ -109,6 +109,56 @@ def nonprofit_dir(dirpath):
     return [{"key": "entities", "name": "الكيانات غير الربحية المسجّلة", "values": vals, "period": "2026"}]
 
 
+STAGE_NAMES = {"رياض الأطفال": "رياض الأطفال", "المرحلة الإبتدائية": "المرحلة الإبتدائية", "المرحلة الابتدائية": "المرحلة الإبتدائية",
+               "المرحلة المتوسطة": "المرحلة المتوسطة", "المرحلة الثانوية": "المرحلة الثانوية"}
+
+
+def students_directorates(dirpath):
+    """ملفات وزارة التعليم (ملف لكل إدارة تعليمية × سنة): سنة، إدارة، مرحلة، سلطة، جنس، سعودي، غير سعودي، إجمالي.
+    يرجّع مقياس الطلاب لأحدث سنة + سلسلة سنوية لكل منطقة + تفصيل المراحل لكل سنة (لدمجه في رسوم النسخة الأولى)."""
+    import openpyxl
+    years = {}   # year -> region -> total
+    stages = {}  # year -> region -> stage -> total
+    for f in sorted(Path(dirpath).glob("*")):
+        wb = openpyxl.load_workbook(f, read_only=True, data_only=True)
+        for sn in wb.sheetnames:
+            rows = list(wb[sn].iter_rows(values_only=True))
+            hi = next((i for i, r in enumerate(rows) if r and any("الإدارة" in str(c) for c in r if c)), None)
+            if hi is None:
+                continue
+            hdr = [str(c).strip() if c else "" for c in rows[hi]]
+            try:
+                yj = next(j for j, h in enumerate(hdr) if "ميلادي" in h)
+                dj = next(j for j, h in enumerate(hdr) if "الإدارة" in h)
+                sj = next(j for j, h in enumerate(hdr) if "المرحلة" in h)
+                tj = next(j for j, h in enumerate(hdr) if "الإجمالي" in h)
+            except StopIteration:
+                continue
+            for r in rows[hi + 1:]:
+                if not r or r[yj] is None:
+                    continue
+                y = str(P.num(r[yj]) and int(P.num(r[yj])))
+                d = str(r[dj] or "").strip()
+                reg_ = DIRECTORATE_REGION.get(d) or P.norm_region(d)
+                v = P.num(r[tj])
+                if not reg_ or v is None:
+                    continue
+                years.setdefault(y, {}).setdefault(reg_, 0.0)
+                years[y][reg_] += v
+                st = STAGE_NAMES.get(str(r[sj] or "").strip())
+                if st:
+                    stages.setdefault(y, {}).setdefault(reg_, {}).setdefault(st, 0.0)
+                    stages[y][reg_][st] += v
+        wb.close()
+    if not years:
+        return []
+    latest = max(years)
+    vals = {r: years[latest].get(r, 0.0) for r in P.REGIONS}
+    series = {r: [{"period": y, "value": years[y][r]} for y in sorted(years) if r in years[y]] for r in P.REGIONS}
+    return [{"key": "students", "name": "طلاب التعليم العام (كل المراحل والقطاعات)", "values": vals, "period": latest,
+             "series": series, "_years": years, "_stages": stages}]
+
+
 S = lambda ind, sheet, cols: ("services_sum", ind, dict(sheet=sheet, cols=cols))  # noqa: E731
 T = lambda ind, sheet, cols: ("region_table", ind, dict(sheet=sheet, cols=cols))  # noqa: E731
 M = lambda ind, cols: ("momah_csv", ind, dict(cols=cols))  # noqa: E731
@@ -123,6 +173,7 @@ METRICS = {
         S("services_statistics", "1-5", {"*مدارس": ("schools_private_girls", "مدارس أهلية (بنات)")}),
         S("services_statistics", "1-1", {"*مدارس": ("kindergartens", "رياض الأطفال")}),
         S("services_statistics", "1-6", {"المعاهد الحكومية": ("tvtc_public", "معاهد التدريب التقني الحكومية"), "المعاهد الاهلية": ("tvtc_private", "معاهد التدريب التقني الأهلية")}),
+        ("students_directorates", "odp_students_directorates", {}),
         ("schools_by_directorate", "odp_schools_public", dict(key="schools_public_2025", name="مدارس التعليم العام الحكومي (مدرسة×مرحلة)")),
         ("schools_by_directorate", "odp_schools_private", dict(key="schools_private_2025", name="مدارس التعليم الأهلي (مدرسة×مرحلة)")),
     ],
@@ -229,6 +280,8 @@ def run_metric(spec):
             out = schools_by_directorate(path, **kw)
         elif fn == "nonprofit_dir":
             out = nonprofit_dir(path)
+        elif fn == "students_directorates":
+            out = students_directorates(path)
         elif fn == "repi_series":
             out = repi_series(path)
         else:
@@ -238,7 +291,29 @@ def run_metric(spec):
         return ind_id, None, f"error: {e}"
 
 
+def merge_education_years(live_base, years, stages):
+    """يضيف سنوات الطلاب الجديدة إلى categories.education.data[region].by_year في نسخة baseline الحيّة."""
+    edu = live_base["categories"].get("education")
+    if not edu:
+        return
+    yrs = set(edu.get("available_years", []))
+    for y, regs in years.items():
+        for reg_, total in regs.items():
+            node = edu["data"].setdefault(reg_, {"by_year": {}})
+            by = node.setdefault("by_year", {})
+            cur = by.setdefault(y, {"schools": 0, "students": 0, "teachers": 0, "admins": 0, "classes": 0, "by_stage": {}})
+            cur["students"] = int(round(total))
+            cur.setdefault("by_stage", {})
+            for st, v in stages.get(y, {}).get(reg_, {}).items():
+                cur["by_stage"].setdefault(st, {"schools": 0, "students": 0, "teachers": 0})["students"] = int(round(v))
+            cur["_live"] = True
+        yrs.add(y)
+    edu["available_years"] = sorted(yrs)
+
+
 def main():
+    global live_base
+    live_base = json.loads(json.dumps(base))  # نسخة من بيانات النسخة الأولى تُحقن فيها السنوات الجديدة
     prev_path = DATA / "dashboard.json"
     prev = json.loads(prev_path.read_text(encoding="utf-8")) if prev_path.exists() else None
     prev_vals = {}
@@ -269,6 +344,12 @@ def main():
                         entry["metrics"].append({**pm, "parse_status": status})
                 continue
             for met in metrics:
+                if "_years" in met:  # دمج السنوات الجديدة في بيانات النسخة الأولى حتى تتحدث رسومها القديمة (مقارنة الطلاب حسب السنة...)
+                    merge_education_years(live_base, met.pop("_years"), met.pop("_stages"))
+                    edu = live_base["categories"]["education"]["data"]  # السلسلة = سنوات النسخة الأولى + السنوات الحيّة
+                    met["series"] = {r: [{"period": y, "value": edu[r]["by_year"][y]["students"]}
+                                         for y in sorted(edu.get(r, {}).get("by_year", {})) if edu[r]["by_year"][y].get("students")]
+                                     for r in P.REGIONS}
                 met = {**met, "indicator": ind_id, "source": reg["sources"][reg["indicators"][ind_id]["source"]]["name"],
                        "source_url": m.get("source_url"), "source_date": m.get("source_date"), "checked_at": m.get("checked_at"),
                        "runner": reg["sources"][reg["indicators"][ind_id]["source"]]["runner"]}
@@ -288,6 +369,7 @@ def main():
     out["manifest"] = {k: {kk: v.get(kk) for kk in ("name", "source", "status", "source_date", "checked_at", "last_change_at", "source_url", "source_file")}
                        for k, v in man["indicators"].items()}
     (DATA / "dashboard.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    (DATA / "baseline_live.json").write_text(json.dumps(live_base, ensure_ascii=False), encoding="utf-8")
     ch_path = DATA / "changes.json"
     allch = json.loads(ch_path.read_text(encoding="utf-8-sig")) if ch_path.exists() else []
     allch = (changes + allch)[:500]

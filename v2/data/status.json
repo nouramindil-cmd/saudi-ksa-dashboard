@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-05T09:12:09Z",
+ "built_at": "2026-10-05T15:48:31Z",
  "manifest": {
   "labor_registry": {
    "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -260,6 +260,16 @@
    "last_change_at": null,
    "source_url": null,
    "source_file": null
+  },
+  "odp_students_directorates": {
+   "name": "البيانات التعليمية للطلاب حسب الإدارات التعليمية (16 إدارة × سنة)",
+   "source": "odp",
+   "status": "updated",
+   "source_date": "2026-06-25",
+   "checked_at": "2026-10-05T15:45:31Z",
+   "last_change_at": "2026-10-05T15:45:48Z",
+   "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=البيانات التعليمية الخاصة بالطلاب بالإدارة العامة للتعليم",
+   "source_file": "16 ملفات: البيانات التعليمية الخاصة بالطلاب بالإدارة العامة للتعليم"
   }
  },
  "log": [
@@ -291,6 +301,11 @@
   {
    "category": "education",
    "indicator": "services_statistics",
+   "status": "ok"
+  },
+  {
+   "category": "education",
+   "indicator": "odp_students_directorates",
    "status": "ok"
   },
   {

@@ -22,7 +22,7 @@ old_loader = re.search(r"// Load data - use embedded data or fetch.*?\n\}\n", sr
 new_loader = """// Load data: baseline (النسخة الأولى كاملة) + live (المقاييس الحيّة) + changes
 let LIVE = null, CHANGES = [];
 Promise.all([
-  fetch('data/baseline.json').then(r => r.json()),
+  fetch('data/baseline_live.json').then(r => r.ok ? r.json() : fetch('data/baseline.json').then(x => x.json())),
   fetch('data/dashboard.json').then(r => r.json()).catch(() => null),
   fetch('data/changes.json').then(r => r.ok ? r.json() : []).catch(() => [])
 ]).then(([base, live, ch]) => { DATA = base; LIVE = live; CHANGES = ch || []; init(); liveHeader(); })
@@ -89,7 +89,9 @@ function injectLive(cat, r) {
     <div class="detail-grid"><div class="detail-card full-width">
       <h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div>
       <div class="live-src" id="liveSrc"></div>
-    </div></div>
+    </div>
+    <div class="detail-card full-width" id="liveSeriesCard" style="display:none"><h3 id="liveSeriesTitle"></h3><div class="chart-container" style="height:280px"><canvas id="liveSeries"></canvas></div></div>
+    </div>
     <div class="live-divider"><span>📁 بيانات النسخة الأولى (كما كانت)</span></div>
   </div>`;
   content.insertAdjacentHTML('afterbegin', html);
@@ -106,7 +108,21 @@ function injectLive(cat, r) {
       options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { rtl: true, callbacks: { label: x => ' ' + (m.key === 'repi' ? x.raw : formatNum(x.raw)) } } },
         scales: { x: { ticks: { color: '#475569', font: { family: 'Tajawal', size: 10 }, callback: v => shortNum(v) }, grid: { color: 'rgba(0,0,0,0.06)' } }, y: { ticks: { color: '#475569', font: { family: 'Tajawal', size: 12 } }, grid: { display: false } } } }
     });
-    if (m.series && m.series[r || 'الرياض']) { /* سلسلة REPI تُعرض في الجدول القديم */ }
+    const sc = document.getElementById('liveSeriesCard');
+    if (charts.liveSeries) { charts.liveSeries.destroy(); delete charts.liveSeries; }
+    if (m.series) {
+      sc.style.display = 'block';
+      const show = r ? [r] : ['الرياض', 'مكة المكرمة', 'المنطقة الشرقية', 'عسير'];
+      const cols = ['#0e7a4a', '#1d5db5', '#d97706', '#7c3aed'];
+      const labels = (m.series[show[0]] || []).map(p => p.period);
+      document.getElementById('liveSeriesTitle').innerHTML = `📈 ${m.name} — السلسلة الزمنية${r ? ' — ' + r : ''} <small style="font-weight:400;color:var(--text-muted)">· تُضاف الفترات الجديدة تلقائياً عند نشرها</small>`;
+      charts.liveSeries = new Chart(document.getElementById('liveSeries'), {
+        type: 'line',
+        data: { labels, datasets: show.map((rg, i) => ({ label: rg, data: labels.map(l => { const p = (m.series[rg] || []).find(q => q.period === l); return p ? p.value : null; }), borderColor: cols[i], backgroundColor: cols[i], borderWidth: 2, pointRadius: 3, tension: 0.25 })) },
+        options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: show.length > 1, rtl: true, labels: { color: '#475569', font: { family: 'Tajawal', size: 11 } } }, tooltip: { rtl: true } },
+          scales: { x: { ticks: { color: '#475569', font: { family: 'Tajawal', size: 10 }, maxTicksLimit: 12 }, grid: { display: false } }, y: { ticks: { color: '#475569', font: { family: 'Tajawal', size: 10 }, callback: v => shortNum(v) }, grid: { color: 'rgba(0,0,0,0.06)' } } } }
+      });
+    } else sc.style.display = 'none';
   };
   document.getElementById('liveCards').onclick = e => { const el = e.target.closest('.live-card'); if (el) draw(+el.dataset.i); };
   draw(0);
