@@ -508,6 +508,19 @@ def merge_education_years(live_base, years, stages, field="students"):
             cur["_live"] = True
         yrs.add(y)
     edu["available_years"] = sorted(yrs)
+    # حقول «الأحدث» التي تعتمد عليها الواجهة القديمة (الملخص التنفيذي، الخريطة، المقارنة): آخر سنة فيها قيمة غير صفرية لكل حقل
+    for reg_, node in edu["data"].items():
+        by = node.get("by_year", {})
+        for fld in ("schools", "students", "teachers"):
+            for y in sorted(by, reverse=True):
+                if by[y].get(fld):
+                    node["latest_" + fld] = by[y][fld]
+                    break
+            if isinstance(node.get("years_" + fld), list):
+                node["years_" + fld] = [by.get(y, {}).get(fld, 0) for y in edu["available_years"]]
+            elif isinstance(node.get("years_" + fld), dict):
+                node["years_" + fld] = {y: by.get(y, {}).get(fld, 0) for y in edu["available_years"]}
+        node["latest_year"] = max(by) if by else node.get("latest_year")
 
 
 # ---------------- التعيير بالسكان + مؤشر فجوة الخدمات ----------------

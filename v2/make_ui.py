@@ -26,7 +26,7 @@ NAV = [
     ("المؤشرات الحيّة", "g-live", [("population_housing", "السكان والإسكان"), ("education", "التعليم"), ("health", "الصحة"), ("disability", "ذوو الإعاقة"), ("labor", "سوق العمل والمنشآت"),
                          ("sports", "الرياضة"), ("nonprofit", "القطاع غير الربحي"), ("security", "الأمن والطوارئ"), ("infrastructure", "الخدمات البلدية"), ("tourism", "السياحة والضيافة"),
                          ("real_estate", "العقارات"), ("religious", "الشؤون الدينية"), ("commerce", "التجارة"), ("women", "المرأة")]),
-    ("التحليل", "g-analysis", [("comparison", "مقارنة المناطق"), ("executive_summary", "الملخص التنفيذي"), ("changes", "سجل التغيّرات")]),
+    ("التحليل", "g-analysis", [("comparison", "مقارنة المناطق"), ("executive_summary", "الملخص التنفيذي")]),
     ("تعداد 2022", "g-census", [("census_population", "التركيبة السكانية"), ("census_nationality", "الجنسية"), ("census_marital", "الحالة الاجتماعية"), ("census_growth", "النمو السكاني"),
                     ("census_dependency", "الإعالة"), ("census_households", "تركيبة الأسر"), ("census_buildings", "المساكن"), ("census_units", "الوحدات السكنية")]),
     ("المرجع", "g-ref", [("methodology", "المنهجية والمصادر")]),
@@ -66,6 +66,8 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .region-badge.active{display:inline-flex}
 .region-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold)}
 .reset-btn{display:none}.reset-btn.active{display:inline-block}
+.year-wrap{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.year-wrap select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line-2);border-radius:6px;background:var(--card);color:var(--ink)}
 
 /* الهيكل */
 .shell{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:236px minmax(0,1fr);gap:28px;padding:24px 28px 60px}
@@ -196,7 +198,8 @@ footer{max-width:1440px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:v
 
 NEW_JS = r"""
 // ===== نبض المناطق: الطبقة الجديدة فوق منطق النسخة الأولى =====
-let LIVE = null, CHANGES = [];
+let LIVE = null, CHANGES = [], yearFilter = '';
+const inYear = m => !yearFilter || String(m.period || '').includes(yearFilter);
 const PALETTE = ['#1F4E9C', '#C28A00', '#0F9B8E', '#A63D40', '#6D5BB8', '#5B6B7F', '#8FA3C7', '#D9B55C'];
 const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{1F1E6}-\u{1F1FF}]/gu;
 const strip = s => String(s ?? '').replace(EMOJI, '').replace(/^\s+/, '');
@@ -263,7 +266,8 @@ function liveHeader() {
   const month = Object.values(LIVE.manifest || {}).filter(m => m.source_date && (Date.now() - new Date(m.source_date)) / 864e5 <= 30).length;
   const el = document.getElementById('liveStatus');
   if (el) el.innerHTML = `${metrics.length} مقياساً من ${Object.keys(LIVE.manifest || {}).length} مصدراً رسمياً · آخر فحص آلي قبل <b>${hrs == null ? '—' : hrs < 24 ? hrs + ' ساعة' : Math.round(hrs / 24) + ' يوماً'}</b> · <b>${month}</b> مصادر نُشر لها جديد خلال 30 يوماً · أحدث نشر: <b>${dstr(newest)}</b>`;
-  const c = document.getElementById('chgCount'); if (c) c.textContent = CHANGES.length || '';
+  const ys = new Set(); metrics.forEach(m => { const y = String(m.period || '').match(/20[1-3]\d/); if (y) ys.add(y[0]); });
+  const sel = document.getElementById('yearSel'); if (sel && sel.options.length <= 1) [...ys].sort().reverse().forEach(y => { const o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); });
 }
 
 function liveCard(m, r, i, active) {
@@ -273,15 +277,17 @@ function liveCard(m, r, i, active) {
 
 function injectLive(cat, r) {
   if (!LIVE || !LIVE.categories[cat]) return;
-  const c = LIVE.categories[cat]; const content = document.getElementById('dataContent');
+  const c0 = LIVE.categories[cat]; const content = document.getElementById('dataContent');
+  const c = { ...c0, metrics: c0.metrics.filter(inYear) };
+  if (yearFilter && !c.metrics.length) { content.insertAdjacentHTML('afterbegin', `<div class="live-box"><div class="live-head"><h3>أحدث البيانات من المصدر</h3><span>لا مقاييس لسنة ${yearFilter} في هذا القسم</span></div></div>`); return; }
   if (!c.metrics.length) { content.insertAdjacentHTML('afterbegin', `<div class="live-box"><div class="live-head"><h3>أحدث البيانات من المصدر</h3><span>لا مصدر آلي لهذا القسم بعد — البيانات أدناه من النسخة الأولى</span></div></div>`); return; }
   const f = c.freshness || {};
   content.insertAdjacentHTML('afterbegin', `<div class="live-box fade-in">
-    <div class="live-head"><h3>أحدث البيانات من المصدر${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً · أحدث نشر ${dstr(f.latest_source_date)} · آخر فحص ${dstr(f.last_checked)}</span></div>
+    <div class="live-head"><h3>أحدث البيانات من المصدر${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً${yearFilter ? ' · سنة ' + yearFilter : ''} · أحدث نشر ${dstr(f.latest_source_date)} · آخر فحص ${dstr(f.last_checked)}</span></div>
     ${(() => { const groups = []; c.metrics.forEach((m, i) => { const g = m.group || ''; let G = groups.find(x => x.g === g); if (!G) { G = { g, items: [] }; groups.push(G); } G.items.push([m, i]); }); return `<div id="liveCards">` + groups.map(G => `${G.g ? `<div class="live-group">${G.g}</div>` : ''}<div class="summary-grid">${G.items.map(([m, i]) => liveCard(m, r, i, i === 0)).join('')}</div>`).join('') + `</div>`; })()}
     <div class="detail-grid"><div class="detail-card full-width"><h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div><div class="live-src" id="liveSrc"></div></div>
     <div class="detail-card full-width" id="liveSeriesCard" style="display:none"><h3 id="liveSeriesTitle"></h3><div class="chart-container" style="height:280px"><canvas id="liveSeries"></canvas></div></div></div>
-    <div class="live-divider"><span>بيانات النسخة الأولى (كما كانت)</span></div></div>`);
+    <div class="live-divider"></div></div>`);
   const draw = i => {
     const m = c.metrics[i]; const vals = m.values;
     document.querySelectorAll('#liveCards .live-card').forEach(x => x.classList.toggle('active', +x.dataset.i === i));
@@ -348,6 +354,7 @@ HTML = f"""<!DOCTYPE html>
 <header class="top"><div class="top-in">
   <div class="brand"><div class="mark"></div><div><h1>نبض المناطق</h1><p id="liveStatus">مؤشرات مناطق المملكة من مصادرها الرسمية · يُفحص آلياً كل يوم</p></div></div>
   <div class="top-actions">
+    <label class="year-wrap"><span>السنة</span><select id="yearSel" onchange="yearFilter=this.value;renderContent()"><option value="">الكل</option></select></label>
     <span id="regionBadge" class="region-badge"><span id="badgeIcon" hidden></span><span id="badgeName"></span></span>
     <button id="resetBtn" class="btn reset-btn" onclick="resetSelection()">إلغاء التحديد</button>
     <button class="btn" onclick="exportAllData()">تصدير البيانات</button>
