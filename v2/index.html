@@ -105,6 +105,14 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .grp-foot{font-size:11px;color:var(--muted);margin-top:6px}
 .more-btn{margin:10px 0 4px}
 .live-group{display:none}
+.menu{position:relative}
+.menu-list{position:absolute;top:calc(100% + 6px);left:0;min-width:260px;background:var(--card);border:1px solid var(--line-2);border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,.12);z-index:70;padding:4px}
+.menu-list button{display:block;width:100%;text-align:right;background:none;border:0;padding:8px 12px;font-size:13px;color:var(--ink-2);cursor:pointer;border-radius:6px}
+.menu-list button:hover{background:var(--tint);color:var(--navy)}
+.dl{display:inline-flex;gap:4px;margin-right:8px}
+.dl button{font-size:11px;padding:1px 8px;border:1px solid var(--line-2);border-radius:999px;background:var(--card);color:var(--ink-2);cursor:pointer}
+.dl button:hover{border-color:var(--navy-2);color:var(--navy-2)}
+@media print{.dl,.menu{display:none!important}}
 .flash{animation:flash 1.6s ease}
 @keyframes flash{0%{box-shadow:0 0 0 3px rgba(176,125,0,.6)}100%{box-shadow:0 0 0 3px rgba(176,125,0,0)}}
 
@@ -226,7 +234,12 @@ footer{max-width:1440px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:v
     <label class="year-wrap"><span>السنة</span><select id="yearSel" onchange="yearFilter=this.value;renderContent()"><option value="">الكل</option></select></label>
     <span id="regionBadge" class="region-badge"><span id="badgeIcon" hidden></span><span id="badgeName"></span></span>
     <button id="resetBtn" class="btn reset-btn" onclick="resetSelection()">إلغاء التحديد</button>
-    <button class="btn" onclick="exportAllData()">تصدير البيانات</button>
+    <div class="menu"><button class="btn" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">تنزيل البيانات ▾</button><div class="menu-list" hidden>
+      <button onclick="exportAll('xlsx')">كل المؤشرات — Excel (ورقة لكل قسم)</button>
+      <button onclick="exportAll('csv')">كل المؤشرات — CSV</button>
+      <button onclick="exportCat(selectedCategory,'xlsx')">القسم الحالي — Excel</button>
+      <button onclick="exportCat(selectedCategory,'csv')">القسم الحالي — CSV</button>
+    </div></div>
     <button class="btn" onclick="window.print()">طباعة</button>
   </div>
 </div></header>
@@ -3185,7 +3198,7 @@ function injectLive(cat, r) {
     <div class="tabs" id="liveTabs"><button class="on" data-t="live">المؤشرات <span>${c.metrics.length}</span></button>${hasOld ? '<button data-t="old">تفاصيل المحافظات</button>' : ''}<button data-t="src">المصادر <span>${Object.keys(srcs).length}</span></button></div>
     <div id="srcTab" style="display:none"><div class="src-list">${Object.values(srcs).map(x => `<div class="src-item"><div>${x.src}<small>${x.file || ''} · نُشر ${dstr(x.date)} · ${x.metrics.length} مقياساً</small></div>${x.url ? `<a class="btn" href="${x.url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}</div>`).join('')}</div></div>
     <div id="liveTab">
-    <div class="live-head"><h3>أحدث البيانات${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً${yearFilter ? ' · سنة ' + yearFilter : ''} · أحدث نشر ${dstr(f.latest_source_date)}</span></div>
+    <div class="live-head"><h3>أحدث البيانات${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً${yearFilter ? ' · سنة ' + yearFilter : ''} · أحدث نشر ${dstr(f.latest_source_date)} <span class="dl"><button onclick="exportCat('${cat}','csv')">CSV</button><button onclick="exportCat('${cat}','xlsx')">Excel</button></span></span></div>
     ${(() => {
       const main = [], groups = [];
       c.metrics.forEach((m, i) => { if (!m.group) main.push([m, i]); else { let G = groups.find(x => x.g === m.group); if (!G) { G = { g: m.group, items: [] }; groups.push(G); } G.items.push([m, i]); } });
@@ -3207,7 +3220,7 @@ function injectLive(cat, r) {
     document.querySelectorAll('#liveCards .grp-row').forEach(x => x.classList.toggle('on', +x.dataset.i === i));
     document.getElementById('liveChartTitle').innerHTML = `${m.name} حسب المناطق <small>· بيانات ${m.period || ''}</small>`;
     const mf = (LIVE.manifest || {})[m.indicator] || {};
-    document.getElementById('liveSrc').innerHTML = `<span>المصدر: ${m.source}</span><span>· الملف: ${mf.source_file ? decodeURIComponent(mf.source_file).replace(/_fixed_\d+$/, '') : '—'}</span>${m.ref ? `<span>· الموضع: ${m.ref}</span>` : ''}<span>· نُشر ${dstr(m.source_date)} (${freshWord(m.source_date)})</span>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}`;
+    document.getElementById('liveSrc').innerHTML = `<span class="dl"><button onclick="exportMetric('${cat}',${i},'csv')">CSV</button><button onclick="exportMetric('${cat}',${i},'xlsx')">Excel</button></span><span>المصدر: ${m.source}</span><span>· الملف: ${mf.source_file ? decodeURIComponent(mf.source_file).replace(/_fixed_\d+$/, '') : '—'}</span>${m.ref ? `<span>· الموضع: ${m.ref}</span>` : ''}<span>· نُشر ${dstr(m.source_date)} (${freshWord(m.source_date)})</span>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}`;
     const regs = [...LIVE.regions].sort((a, b) => (vals[b] || 0) - (vals[a] || 0));
     if (charts.liveChart) charts.liveChart.destroy();
     charts.liveChart = new Chart(document.getElementById('liveChart'), { type: 'bar', data: { labels: regs, datasets: [{ data: regs.map(x => vals[x] ?? null), backgroundColor: regs.map(x => x === r ? PALETTE[1] : PALETTE[0]), barThickness: 16 }] },
@@ -3280,6 +3293,48 @@ function smartMap() {
     tip.innerHTML = lines; }));
   document.addEventListener('keydown', e => { if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return; if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; const i = DATA.regions.indexOf(selectedRegion); const n = (i < 0 ? 0 : i + (e.key === 'ArrowRight' ? -1 : 1) + DATA.regions.length) % DATA.regions.length; selectRegion(DATA.regions[n]); });
 }
+
+// ----- تنزيل البيانات: CSV / Excel -----
+function catRows(cat) {
+  const c = LIVE.categories[cat]; if (!c) return null;
+  const head = ['المقياس', 'المجموعة', 'فترة البيانات', 'الإجمالي/المتوسط', ...LIVE.regions, 'المصدر', 'تاريخ النشر', 'رابط الملف'];
+  const rows = c.metrics.map(m => [m.name, m.group || '', m.period || '', m.total, ...LIVE.regions.map(r => m.values[r] ?? ''), m.source || '', m.source_date || '', m.source_url || '']);
+  return { name: CAT_NAME[cat] || cat, head, rows };
+}
+function metricRows(cat, i) {
+  const m = LIVE.categories[cat].metrics[i];
+  const head = ['المنطقة', m.name + (m.period ? ` (${m.period})` : '')];
+  const rows = LIVE.regions.map(r => [r, m.values[r] ?? '']); rows.push(['الإجمالي/المتوسط', m.total]);
+  if (m.series) { head.push('', 'الفترة', 'القيمة (' + (selectedRegion || 'الرياض') + ')'); const ser = m.series[selectedRegion || 'الرياض'] || []; ser.forEach((p, k) => { if (!rows[k]) rows[k] = ['', '']; rows[k][2] = ''; rows[k][3] = p.period; rows[k][4] = p.value; }); }
+  return { name: m.name, head, rows };
+}
+function toCSV(head, rows) { const esc = v => { const t = String(v ?? ''); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; }; return '﻿' + [head, ...rows].map(r => r.map(esc).join(',')).join('\r\n'); }
+function saveBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800); }
+function stamp() { return new Date().toISOString().slice(0, 10); }
+function withXLSX(fn) { if (window.XLSX) return fn(); const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; sc.onload = fn; sc.onerror = () => alert('تعذّر تحميل مكتبة Excel (يلزم اتصال بالإنترنت). استخدمي CSV.'); document.head.appendChild(sc); }
+function sheetName(n) { return String(n).replace(/[\\/?*\[\]:]/g, ' ').slice(0, 31) || 'Sheet'; }
+function exportCat(cat, fmt) {
+  const d = catRows(cat); if (!d) { alert('اختاري قسماً من المؤشرات الحيّة أولاً'); return; }
+  const fname = `${d.name} - ${stamp()}`;
+  if (fmt === 'csv') return saveBlob(new Blob([toCSV(d.head, d.rows)], { type: 'text/csv;charset=utf-8' }), fname + '.csv');
+  withXLSX(() => { const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet([d.head, ...d.rows]); ws['!views'] = [{ RTL: true }]; XLSX.utils.book_append_sheet(wb, ws, sheetName(d.name)); XLSX.writeFile(wb, fname + '.xlsx'); });
+}
+function exportMetric(cat, i, fmt) {
+  const d = metricRows(cat, i); const fname = `${d.name} - ${stamp()}`;
+  if (fmt === 'csv') return saveBlob(new Blob([toCSV(d.head, d.rows)], { type: 'text/csv;charset=utf-8' }), fname + '.csv');
+  withXLSX(() => { const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet([d.head, ...d.rows]); ws['!views'] = [{ RTL: true }]; XLSX.utils.book_append_sheet(wb, ws, 'البيانات'); XLSX.writeFile(wb, fname + '.xlsx'); });
+}
+function exportAll(fmt) {
+  document.querySelectorAll('.menu-list').forEach(m => m.hidden = true);
+  const cats = Object.keys(LIVE.categories).map(catRows).filter(Boolean);
+  const fname = `لوحة بيانات المملكة - كل المؤشرات - ${stamp()}`;
+  if (fmt === 'csv') { const head = ['القسم', ...cats[0].head]; const rows = cats.flatMap(d => d.rows.map(r => [d.name, ...r])); return saveBlob(new Blob([toCSV(head, rows)], { type: 'text/csv;charset=utf-8' }), fname + '.csv'); }
+  withXLSX(() => { const wb = XLSX.utils.book_new();
+    cats.forEach(d => { const ws = XLSX.utils.aoa_to_sheet([d.head, ...d.rows]); ws['!views'] = [{ RTL: true }]; XLSX.utils.book_append_sheet(wb, ws, sheetName(d.name)); });
+    const M = LIVE.methodology || []; const ws = XLSX.utils.aoa_to_sheet([['القسم', 'المقياس', 'الجهة', 'الملف', 'الموضع في الملف', 'فترة البيانات', 'تاريخ النشر', 'الرابط'], ...M.map(m => [m.category, m.metric, m.source, m.file || '', m.ref || '', m.period || '', m.source_date || '', m.source_url || ''])]); ws['!views'] = [{ RTL: true }]; XLSX.utils.book_append_sheet(wb, ws, 'المصادر');
+    XLSX.writeFile(wb, fname + '.xlsx'); });
+}
+document.addEventListener('click', e => { if (!e.target.closest('.menu')) document.querySelectorAll('.menu-list').forEach(m => m.hidden = true); });
 
 // ----- تحميل البيانات -----
 Promise.all([
