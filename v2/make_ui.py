@@ -120,6 +120,19 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .src-list{display:flex;flex-direction:column;gap:10px}
 .src-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:13px}
 .src-item small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-top:14px}
+.grp-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.grp-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.grp-row{display:grid;grid-template-columns:minmax(90px,1.2fr) 1fr 74px 36px;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px}
+.grp-row:hover{background:var(--bg)}
+.grp-row.on{background:var(--tint);box-shadow:inset 0 0 0 1px var(--navy-2)}
+.grp-l{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grp-bar{height:7px;background:var(--line);border-radius:4px;overflow:hidden}.grp-bar i{display:block;height:100%;background:var(--navy-2);border-radius:4px}
+.grp-v{font-weight:600;color:var(--navy);text-align:left;direction:ltr;font-variant-numeric:tabular-nums}
+.grp-s{color:var(--muted);text-align:left;direction:ltr;font-size:11px}
+.grp-foot{font-size:11px;color:var(--muted);margin-top:6px}
+.more-btn{margin:10px 0 4px}
+.live-group{display:none}
 .flash{animation:flash 1.6s ease}
 @keyframes flash{0%{box-shadow:0 0 0 3px rgba(176,125,0,.6)}100%{box-shadow:0 0 0 3px rgba(176,125,0,0)}}
 
@@ -349,7 +362,8 @@ function injectLive(cat, r) {
   const f = c.freshness || {};
   // محتوى النسخة الأولى → تبويب «تفاصيل المحافظات» (بلا بطاقاته المكررة)
   const oldNodes = [...content.children]; const oldTab = document.createElement('div'); oldTab.id = 'oldTab'; oldTab.style.display = 'none'; oldNodes.forEach(n => oldTab.appendChild(n)); content.appendChild(oldTab);
-  const hasOld = !!oldTab.querySelector('.detail-card, .data-table, .gov-list');
+  const hasOld = cat !== 'real_estate' && (!!oldTab.querySelector('.gov-list') || /المحافظ|المدن|الأمانات/.test(oldTab.innerText || ''));
+  if (!hasOld) oldTab.remove();
   const srcs = {}; c0.metrics.forEach(m => { const mf = (LIVE.manifest || {})[m.indicator] || {}; const k = m.indicator; if (!srcs[k]) srcs[k] = { src: m.source, file: mf.source_file ? decodeURIComponent(mf.source_file).replace(/_fixed_\d+$/, '') : '', url: m.source_url, date: m.source_date, metrics: [] }; srcs[k].metrics.push(m.name); });
   content.insertAdjacentHTML('afterbegin', `<div class="live-box fade-in">
     <div class="crumb"><i class="ic" data-ic="${cat}"></i><b>${CAT_NAME[cat] || ''}</b>${r ? ` › <b>${r}</b>` : ' › إجمالي المملكة'}${yearFilter ? ` › <b>${yearFilter}</b>` : ''}</div>
@@ -357,15 +371,25 @@ function injectLive(cat, r) {
     <div id="srcTab" style="display:none"><div class="src-list">${Object.values(srcs).map(x => `<div class="src-item"><div>${x.src}<small>${x.file || ''} · نُشر ${dstr(x.date)} · ${x.metrics.length} مقياساً</small></div>${x.url ? `<a class="btn" href="${x.url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}</div>`).join('')}</div></div>
     <div id="liveTab">
     <div class="live-head"><h3>أحدث البيانات${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً${yearFilter ? ' · سنة ' + yearFilter : ''} · أحدث نشر ${dstr(f.latest_source_date)}</span></div>
-    ${(() => { const groups = []; c.metrics.forEach((m, i) => { const g = m.group || ''; let G = groups.find(x => x.g === g); if (!G) { G = { g, items: [] }; groups.push(G); } G.items.push([m, i]); }); return `<div id="liveCards">` + groups.map(G => `${G.g ? `<div class="live-group">${G.g}</div>` : ''}<div class="summary-grid">${G.items.map(([m, i]) => liveCard(m, r, i, i === 0)).join('')}</div>`).join('') + `</div>`; })()}
+    ${(() => {
+      const main = [], groups = [];
+      c.metrics.forEach((m, i) => { if (!m.group) main.push([m, i]); else { let G = groups.find(x => x.g === m.group); if (!G) { G = { g: m.group, items: [] }; groups.push(G); } G.items.push([m, i]); } });
+      const LIM = 8; const extra = main.length > LIM ? main.slice(LIM) : [];
+      let h = `<div id="liveCards"><div class="summary-grid">${main.slice(0, LIM).map(([m, i]) => liveCard(m, r, i, i === main[0][1])).join('')}</div>`;
+      if (extra.length) h += `<div class="summary-grid more-cards" hidden>${extra.map(([m, i]) => liveCard(m, r, i, false)).join('')}</div><button class="btn more-btn" onclick="const g=this.previousElementSibling; g.hidden=!g.hidden; this.textContent=g.hidden?'عرض ${extra.length} مقاييس أخرى':'إخفاء'; if(!g.hidden) countUp(g);">عرض ${extra.length} مقاييس أخرى</button>`;
+      if (groups.length) h += `<div class="grp-grid">` + groups.map(G => { const vals = G.items.map(([m]) => mval(m, r) || 0); const mx = Math.max(...vals, 1); const sum = vals.reduce((a, b) => a + b, 0);
+        return `<div class="grp-panel"><div class="grp-title">${G.g}</div>${G.items.map(([m, i], k) => { const v = vals[k]; const share = sum && !m.agg ? (v / sum * 100) : null; const label = m.name.replace(/^[^:]+:\s*/, '').replace(/^(سعوديون|غير سعوديين|طلاب|كبار السن|إشراف|إعاقة|شدة|متزوجة\?|لديه إعاقة\?)\s*/, '');
+          return `<div class="grp-row" data-i="${i}"><span class="grp-l" title="${m.name}">${label}</span><span class="grp-bar"><i style="width:${Math.max(2, v / mx * 100)}%"></i></span><b class="grp-v">${fmtv(m, v)}</b><small class="grp-s">${share != null ? share.toFixed(0) + '%' : ''}</small></div>`; }).join('')}<div class="grp-foot">بيانات ${G.items[0][0].period || ''} · اضغطي صفاً لعرضه حسب المناطق</div></div>`; }).join('') + `</div>`;
+      return h + `</div>`; })()}
     <div class="detail-grid"><div class="detail-card full-width"><h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div><div class="live-src" id="liveSrc"></div></div>
     <div class="detail-card full-width" id="liveSeriesCard" style="display:none"><h3 id="liveSeriesTitle"></h3><div class="chart-container" style="height:280px"><canvas id="liveSeries"></canvas></div></div></div>
     </div></div>`);
   paintIcons(); countUp(content);
-  document.getElementById('liveTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#liveTabs button').forEach(x => x.classList.toggle('on', x === b)); document.getElementById('liveTab').style.display = b.dataset.t === 'live' ? '' : 'none'; document.getElementById('oldTab').style.display = b.dataset.t === 'old' ? '' : 'none'; document.getElementById('srcTab').style.display = b.dataset.t === 'src' ? '' : 'none'; if (b.dataset.t === 'old') Object.values(charts).forEach(ch => { try { ch.resize(); } catch (e) {} }); };
+  document.getElementById('liveTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#liveTabs button').forEach(x => x.classList.toggle('on', x === b)); document.getElementById('liveTab').style.display = b.dataset.t === 'live' ? '' : 'none'; const ot = document.getElementById('oldTab'); if (ot) ot.style.display = b.dataset.t === 'old' ? '' : 'none'; document.getElementById('srcTab').style.display = b.dataset.t === 'src' ? '' : 'none'; if (b.dataset.t === 'old') Object.values(charts).forEach(ch => { try { ch.resize(); } catch (e) {} }); };
   const draw = i => {
     const m = c.metrics[i]; const vals = m.values;
     document.querySelectorAll('#liveCards .live-card').forEach(x => x.classList.toggle('active', +x.dataset.i === i));
+    document.querySelectorAll('#liveCards .grp-row').forEach(x => x.classList.toggle('on', +x.dataset.i === i));
     document.getElementById('liveChartTitle').innerHTML = `${m.name} حسب المناطق <small>· بيانات ${m.period || ''}</small>`;
     const mf = (LIVE.manifest || {})[m.indicator] || {};
     document.getElementById('liveSrc').innerHTML = `<span>المصدر: ${m.source}</span><span>· الملف: ${mf.source_file ? decodeURIComponent(mf.source_file).replace(/_fixed_\d+$/, '') : '—'}</span>${m.ref ? `<span>· الموضع: ${m.ref}</span>` : ''}<span>· نُشر ${dstr(m.source_date)} (${freshWord(m.source_date)})</span>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}`;
@@ -381,7 +405,7 @@ function injectLive(cat, r) {
         options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: show.length > 1, rtl: true } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { ticks: { callback: v => shortNum(v) } } } } });
     } else sc.style.display = 'none';
   };
-  document.getElementById('liveCards').onclick = e => { const el = e.target.closest('.live-card'); if (el) draw(+el.dataset.i); };
+  document.getElementById('liveCards').onclick = e => { const el = e.target.closest('.live-card, .grp-row'); if (!el) return; draw(+el.dataset.i); document.querySelectorAll('.grp-row').forEach(x => x.classList.toggle('on', x === el)); };
   draw(0);
 }
 
