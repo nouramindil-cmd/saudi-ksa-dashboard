@@ -27,6 +27,6 @@ data_tags = (f'<script type="application/json" id="d-base">{esc(base)}</script>\
 html = html.replace("<footer>", data_tags + "<footer>", 1)
 stamp = datetime.now().strftime("%Y-%m-%d")
 html = html.replace("</footer>", f" · نسخة ملف واحد بتاريخ {stamp}</footer>", 1)
-out = Path.home() / "Downloads" / "نبض المناطق.html"
+out = Path.home() / "Downloads" / "لوحة بيانات المملكة.html"
 out.write_text(html, encoding="utf-8")
 print(out, f"{out.stat().st_size / 1e6:.1f} MB")
