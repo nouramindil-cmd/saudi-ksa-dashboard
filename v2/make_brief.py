@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""صفحة تعريفية بما الجديد في لوحة بيانات المملكة (الإصدار الثاني) — بهوية مركز الدراسات والأبحاث / وزارة البلديات والإسكان.
+"""صفحة تعريفية بما الجديد في لوحة بيانات المملكة (الإصدار الثاني) — بهوية المركز الوطني للدراسات والبحوث الاجتماعية (NCSS).
 المخرجات: Downloads\\ما الجديد في لوحة بيانات المملكة.html"""
 import base64
 from datetime import date
 from pathlib import Path
 
-logo = base64.b64encode(Path(r"C:\Users\lenovo\dashboard_hub\momah-logo-white.png").read_bytes()).decode()
+logo = base64.b64encode(Path(r"C:\Users\lenovo\Downloads\logo.png").read_bytes()).decode()
 
 ADDED = [
     ("التعليم", ["الفصول الدراسية (حكومي، بنين وبنات)", "معاهد التدريب التقني الحكومية والأهلية", "الطلاب حسب القطاع: حكومي، أهلي، عالمي وأجنبي", "الطلاب السعوديون وغير السعوديين بكل مرحلة"]),
@@ -35,7 +35,7 @@ HTML = f"""<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{{--teal-900:#003A37;--teal-700:#006C67;--teal-500:#009A93;--lime:#9BC73E;--ground:#F3F6F5;--card:#FFFFFF;--ink:#17201F;--ink-2:#3C4A48;--muted:#6B7A78;--line:#D9E2E0;--tint:#E6F1F0}}
+:root{{--orange:#F08020;--orange-700:#D9641A;--amber:#F0C050;--teal:#2FAFA3;--blue:#1C9FD8;--ground:#FBF8F3;--card:#FFFFFF;--ink:#2A2A2E;--ink-2:#4A4C55;--muted:#7D7F88;--line:#E8E3DA;--tint:#FFF2E6;--tint-teal:#E8F6F4}}
 *{{box-sizing:border-box;margin:0;padding:0}}
 html{{color-scheme:light}}
 body{{font-family:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--ground);color:var(--ink);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}}
@@ -43,58 +43,59 @@ body{{font-family:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans
 h1,h2,h3{{line-height:1.3;font-weight:600;text-wrap:balance}}
 
 /* الشريط العلوي */
-.band{{background:var(--teal-900);color:#fff;position:relative;overflow:hidden}}
-.band::after{{content:"";position:absolute;inset:auto -10% -60% auto;width:52%;height:140%;background:radial-gradient(closest-side,rgba(0,154,147,.35),transparent 70%);pointer-events:none}}
+.band{{background:var(--card);color:var(--ink);position:relative;overflow:hidden;border-top:6px solid var(--orange);border-bottom:1px solid var(--line)}}
+.band::after{{content:"";position:absolute;inset:auto -10% -60% auto;width:52%;height:140%;background:radial-gradient(closest-side,rgba(240,128,32,.14),transparent 70%);pointer-events:none}}
 .band-in{{max-width:1100px;margin:0 auto;padding:28px 24px 34px;position:relative}}
 .band-top{{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}}
-.band img{{height:58px;width:auto}}
-.center{{text-align:left;font-size:13px;color:rgba(255,255,255,.78);line-height:1.5}}
-.center b{{display:block;color:#fff;font-weight:600;font-size:15px}}
-.eyebrow{{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.3px;color:var(--lime);font-weight:600;margin-top:28px}}
-.eyebrow::before{{content:"";width:22px;height:2px;background:var(--lime)}}
+.band img{{height:84px;width:auto}}
+.center{{text-align:left;font-size:13px;color:var(--muted);line-height:1.5}}
+.center b{{display:block;color:var(--ink);font-weight:600;font-size:15px}}
+.eyebrow{{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.3px;color:var(--orange-700);font-weight:600;margin-top:28px}}
+.eyebrow::before{{content:"";width:22px;height:2px;background:var(--orange)}}
 .band h1{{font-size:clamp(26px,3.6vw,38px);margin-top:8px;max-width:22ch}}
-.band p.lead{{max-width:62ch;color:rgba(255,255,255,.82);margin-top:10px;font-size:15.5px}}
+.band p.lead{{max-width:62ch;color:var(--ink-2);margin-top:10px;font-size:15.5px}}
 
 .wrap{{max-width:1100px;margin:0 auto;padding:0 24px 48px}}
 
 /* المقارنة */
 .compare{{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch;margin-top:-26px}}
-.big{{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:0 10px 30px rgba(0,58,55,.08)}}
+.big{{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:0 10px 30px rgba(240,128,32,.10)}}
 .big .l{{font-size:13px;color:var(--muted);font-weight:500}}
-.big .v{{font-size:clamp(44px,6vw,64px);font-weight:700;line-height:1;margin:6px 0 4px;color:var(--teal-900)}}
-.big.after .v{{color:var(--teal-500)}}
+.big .v{{font-size:clamp(44px,6vw,64px);font-weight:700;line-height:1;margin:6px 0 4px;color:var(--ink-2)}}
+.big.after .v{{color:var(--orange)}}
+.big.after{{border-color:#F6C9A3}}
 .big .s{{font-size:13.5px;color:var(--ink-2)}}
-.arrow{{display:flex;align-items:center;justify-content:center;color:var(--teal-500);font-size:34px;font-weight:300}}
+.arrow{{display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:34px;font-weight:300}}
 .stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:18px}}
 .stat{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}}
-.stat .v{{font-size:26px;font-weight:600;color:var(--teal-900);line-height:1.15}}
+.stat .v{{font-size:26px;font-weight:600;color:var(--ink);line-height:1.15}}
 .stat .l{{font-size:12.5px;color:var(--muted);margin-top:2px}}
 
 /* الأقسام */
 section{{margin-top:44px}}
 .sh{{display:flex;align-items:baseline;gap:14px;margin-bottom:16px}}
-.sh h2{{font-size:22px;color:var(--teal-900)}}
+.sh h2{{font-size:22px;color:var(--ink)}}
 .sh span{{font-size:13px;color:var(--muted)}}
 .sh::after{{content:"";flex:1;height:1px;background:var(--line);align-self:center}}
 
 .tiles{{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}}
 .tile{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;position:relative}}
-.tile::before{{content:"";position:absolute;top:0;right:0;left:0;height:3px;border-radius:12px 12px 0 0;background:var(--teal-500)}}
+.tile::before{{content:"";position:absolute;top:0;right:0;left:0;height:3px;border-radius:12px 12px 0 0;background:var(--orange)}}
 .tile .ic{{width:36px;height:36px;border-radius:9px;background:var(--tint);display:flex;align-items:center;justify-content:center;margin-bottom:12px}}
-.tile .ic svg{{width:20px;height:20px;fill:none;stroke:var(--teal-700);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}}
+.tile .ic svg{{width:20px;height:20px;fill:none;stroke:var(--orange-700);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}}
 .tile h3{{font-size:15.5px;margin-bottom:6px}}
 .tile p{{font-size:13.5px;color:var(--ink-2)}}
 
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}}
 .sec{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}}
 .sec-h{{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}}
-.sec-h h3{{font-size:15.5px;color:var(--teal-900)}}
-.sec-h .n{{font-size:12px;font-weight:600;color:var(--teal-700);background:var(--tint);border-radius:999px;padding:1px 9px;min-width:26px;text-align:center}}
+.sec-h h3{{font-size:15.5px;color:var(--ink)}}
+.sec-h .n{{font-size:12px;font-weight:600;color:var(--orange-700);background:var(--tint);border-radius:999px;padding:1px 9px;min-width:26px;text-align:center}}
 .sec ul{{list-style:none;display:flex;flex-direction:column;gap:5px}}
 .sec li{{font-size:13.5px;color:var(--ink-2);padding-right:16px;position:relative}}
-.sec li::before{{content:"";position:absolute;right:0;top:.72em;width:7px;height:7px;border-radius:2px;background:var(--lime)}}
+.sec li::before{{content:"";position:absolute;right:0;top:.72em;width:7px;height:7px;border-radius:2px;background:var(--teal)}}
 
-.note{{background:var(--tint);border-right:3px solid var(--teal-500);border-radius:8px;padding:12px 16px;font-size:13.5px;color:var(--ink-2);margin-top:14px}}
+.note{{background:var(--tint-teal);border-right:3px solid var(--teal);border-radius:8px;padding:12px 16px;font-size:13.5px;color:var(--ink-2);margin-top:14px}}
 footer{{max-width:1100px;margin:0 auto;padding:18px 24px 40px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line)}}
 
 @media (max-width:720px){{.compare{{grid-template-columns:1fr}}.arrow{{transform:rotate(90deg);font-size:28px}}.band-top{{flex-direction:column;align-items:flex-start}}.center{{text-align:right}}}}
@@ -104,8 +105,8 @@ footer{{max-width:1100px;margin:0 auto;padding:18px 24px 40px;display:flex;justi
 <body>
 <header class="band"><div class="band-in">
   <div class="band-top">
-    <img src="data:image/png;base64,{logo}" alt="وزارة البلديات والإسكان">
-    <div class="center"><b>مركز الدراسات والأبحاث</b>وزارة البلديات والإسكان</div>
+    <img src="data:image/png;base64,{logo}" alt="المركز الوطني للدراسات والبحوث الاجتماعية">
+    <div class="center"><b>المركز الوطني للدراسات والبحوث الاجتماعية</b>وزارة الموارد البشرية والتنمية الاجتماعية</div>
   </div>
   <div class="eyebrow">الإصدار الثاني</div>
   <h1>ما الجديد في لوحة بيانات المملكة العربية السعودية</h1>
@@ -141,7 +142,7 @@ footer{{max-width:1100px;margin:0 auto;padding:18px 24px 40px;display:flex;justi
     <div class="note">بقية المقاييس من الإصدار الأول ما زالت موجودة وتحدّثت إلى أحدث إصدار منشور، وبيانات تعداد السكان 2022 ثابتة حتى صدور التعداد القادم.</div>
   </section>
 </main>
-<footer><span>مركز الدراسات والأبحاث · وزارة البلديات والإسكان</span><span>{date.today().strftime('%Y/%m/%d')}</span></footer>
+<footer><span>المركز الوطني للدراسات والبحوث الاجتماعية · وزارة الموارد البشرية والتنمية الاجتماعية</span><span>{date.today().strftime('%Y/%m/%d')}</span></footer>
 </body>
 </html>
 """
