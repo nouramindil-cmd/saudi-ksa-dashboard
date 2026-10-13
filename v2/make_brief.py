@@ -58,7 +58,7 @@ h1,h2,h3{{line-height:1.3;font-weight:600;text-wrap:balance}}
 .wrap{{max-width:1100px;margin:0 auto;padding:0 24px 48px}}
 
 /* المقارنة */
-.compare{{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch;margin-top:-26px}}
+.compare{{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch;margin-top:28px}}
 .big{{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:0 10px 30px rgba(240,128,32,.10)}}
 .big .l{{font-size:13px;color:var(--muted);font-weight:500}}
 .big .v{{font-size:clamp(44px,6vw,64px);font-weight:700;line-height:1;margin:6px 0 4px;color:var(--ink-2)}}
