@@ -3239,11 +3239,25 @@ function injectLive(cat, r) {
 
 function renderMethodology() {
   const content = document.getElementById('dataContent'); const M = LIVE.methodology || [];
-  let html = `<div class="fade-in"><div class="eyebrow">المرجع</div><h2>المنهجية والمصادر</h2>
-  <div class="note"><div class="note-t">كيف تُجمع الأرقام</div><p>لكل مقياس مصدر رسمي واحد محدد بملفه وموضعه داخل الملف. برنامج جامع يفحص المصادر يومياً (هيئة الإحصاء ووزارة البلديات من السحابة، ومنصة سدايا من جهاز الموظف لأنها تمنع السحب الآلي الخارجي)، وينزّل الملف فقط إذا تغيّر تاريخ نشره أو محتواه، ثم تحوّله محلّلات مخصصة إلى قيم للمناطق الإدارية الثلاث عشرة. كل رقم يحمل سنة بياناته وتاريخ نشر الجهة له ورابط الملف الأصلي.</p><p style="margin-top:8px"><b>حدود:</b> تاريخ البيانات يتبع الجهة؛ بعض الجهات تنشر سنوياً بتأخر يصل عشرة أشهر. تعداد السكان ثابت حتى التعداد القادم. المقاييس الملفّية تُعدّ كما نشرتها الجهة دون تنقية.</p></div>
-  <div class="note"><div class="note-t">حالة التحديث</div><p>آخر فحص آلي للمصادر: ${dstr(Object.values(LIVE.manifest || {}).map(m => m.checked_at).filter(Boolean).sort().pop())} · أحدث نشر عند الجهات: ${dstr(Object.values(LIVE.manifest || {}).map(m => m.source_date).filter(Boolean).sort().pop())}.</p></div>
-  <div class="detail-card"><h3>سجل المقاييس <small>· ${M.length}</small></h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>الجهة</th><th>الملف</th><th>الموضع</th><th>بيانات</th><th>نشر المصدر</th><th>التحديث</th><th></th></tr>`;
-  M.forEach(m => { html += `<tr><td>${m.category}</td><td>${m.metric}</td><td>${m.source}</td><td style="font-size:11px;direction:ltr;text-align:right">${m.file || '—'}</td><td style="font-size:11px">${m.ref || '—'}</td><td>${m.period || '—'}</td><td>${dstr(m.source_date)}</td><td>${m.runner === 'cloud' ? 'يومي آلي' : 'من الجهاز'}</td><td>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">رابط</a>` : ''}</td></tr>`; });
+  const bySrc = {}; M.forEach(m => { bySrc[m.source] = (bySrc[m.source] || 0) + 1; });
+  let html = `<div class="fade-in"><div class="eyebrow">المرجع</div><h2>المنهجية</h2>
+  <div class="summary-grid">${summaryCard('', '13', 'منطقة إدارية')}${summaryCard('', String(Object.keys(LIVE.categories).length + Object.keys(DATA.categories).filter(k => k.startsWith('census_')).length), 'قسماً')}${summaryCard('', String(M.length), 'مقياساً على مستوى المناطق')}${summaryCard('', String(Object.keys(bySrc).length), 'جهات مصدرية')}</div>
+  <div class="detail-grid">
+    <div class="detail-card"><h3>نطاق اللوحة</h3><p style="font-size:13.5px;color:var(--ink-2)">تغطي اللوحة المناطق الإدارية الثلاث عشرة للمملكة في أقسام اجتماعية واقتصادية وخدمية، وتعتمد على الإصدارات الرسمية المنشورة من الجهات المختصة. كل مقياس يحمل سنة بياناته أو ربعه، ويُعرض بقيمه كما نشرتها الجهة دون تقدير أو تعديل.</p></div>
+    <div class="detail-card"><h3>الجهات المصدرية</h3><table class="data-table"><tr><th>الجهة</th><th>عدد المقاييس</th></tr>${Object.entries(bySrc).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table></div>
+  </div>
+  <div class="detail-card" style="margin-bottom:16px"><h3>تعريفات وملاحظات منهجية</h3><ul style="font-size:13.5px;color:var(--ink-2);padding-right:18px;line-height:1.9">
+    <li><b>الإجمالي</b> في البطاقات هو مجموع المناطق الثلاث عشرة، وفي المعدلات والنسب هو <b>متوسط المناطق</b> لا مجموعها.</li>
+    <li><b>عدد المدارس</b> يُحسب بوصفه مدرسة لكل مرحلة تعليمية، وهو التعريف المعتمد في إحصاءات التعليم بالمناطق.</li>
+    <li><b>الإدارات التعليمية</b> (جدة، الطائف، الأحساء) تُضم إلى منطقتها الإدارية.</li>
+    <li><b>بيانات وزارة البلديات والإسكان</b> تُنشر على مستوى الأمانات، وتُجمع إلى المناطق بحسب تبعية كل أمانة.</li>
+    <li><b>المواليد الأحياء</b> تُنشر بحسب فروع وزارة الصحة وتُجمع إلى المناطق.</li>
+    <li><b>إحصاءات المساكن</b> تخص المساكن المشغولة بأسر سعودية كما تعرّفها هيئة الإحصاء.</li>
+    <li><b>بيانات التعداد</b> من تعداد السعودية 2022 وتبقى ثابتة حتى صدور التعداد القادم.</li>
+    <li><b>السلاسل الزمنية</b> (الطلاب، مؤشر أسعار العقارات) تُبنى من إصدارات متعاقبة لنفس الجهة.</li>
+  </ul></div>
+  <div class="detail-card"><h3>سجل المقاييس <small>· ${M.length}</small></h3><table class="data-table"><tr><th>القسم</th><th>المقياس</th><th>الجهة</th><th>فترة البيانات</th><th></th></tr>`;
+  M.forEach(m => { html += `<tr><td>${m.category}</td><td>${m.metric}</td><td>${m.source}</td><td>${m.period || '—'}</td><td>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">المصدر</a>` : ''}</td></tr>`; });
   content.innerHTML = html + '</table></div></div>';
 }
 
