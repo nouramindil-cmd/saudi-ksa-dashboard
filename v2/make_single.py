@@ -15,6 +15,7 @@ changes = (ROOT / "data" / "changes.json").read_text(encoding="utf-8-sig")
 
 loader_start = html.index("// ----- تحميل البيانات -----")
 loader_end = html.index("</script>", loader_start)
+inline = ("// ----- البيانات مضمّنة داخل الملف -----\n"
           "(function(){ const base = JSON.parse(document.getElementById('d-base').textContent); const live = JSON.parse(document.getElementById('d-live').textContent); const ch = JSON.parse(document.getElementById('d-ch').textContent);"
           " DATA = base; LIVE = live; CHANGES = ch || []; init(); liveHeader(); deEmoji(document.getElementById('welcomeScreen')); })();\n")
 html = html[:loader_start] + inline + html[loader_end:]
