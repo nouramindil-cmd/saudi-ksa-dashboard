@@ -106,7 +106,7 @@ footer{{max-width:1100px;margin:0 auto;padding:18px 24px 40px;display:flex;justi
 <header class="band"><div class="band-in">
   <div class="band-top">
     <img src="data:image/png;base64,{logo}" alt="المركز الوطني للدراسات والبحوث الاجتماعية">
-    <div class="center"><b>المركز الوطني للدراسات والبحوث الاجتماعية</b>وزارة الموارد البشرية والتنمية الاجتماعية</div>
+    <div class="center"><b>المركز الوطني للدراسات والبحوث الاجتماعية</b></div>
   </div>
   <div class="eyebrow">الإصدار الثاني</div>
   <h1>ما الجديد في لوحة بيانات المملكة العربية السعودية</h1>
@@ -142,7 +142,7 @@ footer{{max-width:1100px;margin:0 auto;padding:18px 24px 40px;display:flex;justi
     <div class="note">بقية المقاييس من الإصدار الأول ما زالت موجودة وتحدّثت إلى أحدث إصدار منشور، وبيانات تعداد السكان 2022 ثابتة حتى صدور التعداد القادم.</div>
   </section>
 </main>
-<footer><span>المركز الوطني للدراسات والبحوث الاجتماعية · وزارة الموارد البشرية والتنمية الاجتماعية</span><span>{date.today().strftime('%Y/%m/%d')}</span></footer>
+<footer><span>المركز الوطني للدراسات والبحوث الاجتماعية</span><span>{date.today().strftime('%Y/%m/%d')}</span></footer>
 </body>
 </html>
 """

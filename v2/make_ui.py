@@ -28,7 +28,8 @@ NAV = [
                          ("real_estate", "العقارات"), ("religious", "الشؤون الدينية"), ("commerce", "التجارة"), ("women", "المرأة")]),
     ("التحليل", "g-analysis", [("comparison", "مقارنة المناطق"), ("executive_summary", "الملخص التنفيذي")]),
     ("تعداد 2022", "g-census", [("census_population", "التركيبة السكانية"), ("census_nationality", "الجنسية"), ("census_marital", "الحالة الاجتماعية"), ("census_growth", "النمو السكاني"),
-                    ("census_dependency", "الإعالة"), ("census_households", "تركيبة الأسر"), ("census_buildings", "المساكن"), ("census_units", "الوحدات السكنية")]),
+                    ("census_dependency", "الإعالة"), ("census_households", "تركيبة الأسر"), ("census_buildings", "المساكن"), ("census_units", "الوحدات السكنية")    ]),
+    ("المرجع", "g-ref", [("methodology", "المنهجية")]),
 ]
 nav_html = "".join(
     f'<div class="nav-group {cls}"><div class="nav-title">{g}</div>' + "".join(
