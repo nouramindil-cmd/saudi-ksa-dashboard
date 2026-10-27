@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-27T09:07:25Z",
+ "built_at": "2026-10-27T09:37:40Z",
  "manifest": {
   "labor_registry": {
    "name": "العاملون والمنشآت حسب المناطق (سجلية)",
@@ -156,7 +156,7 @@
    "source": "odp",
    "status": "unchanged",
    "source_date": "2026-06-24",
-   "checked_at": "2026-10-04T17:51:08Z",
+   "checked_at": "2026-10-27T09:37:23Z",
    "last_change_at": "2026-10-04T17:47:14Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/958343ed-06b6-46a9-ba18-7d79f0481c0b",
    "source_file": "Distribution of municipalities according to their.xlsx"
@@ -166,7 +166,7 @@
    "source": "odp",
    "status": "unchanged",
    "source_date": "2026-02-05",
-   "checked_at": "2026-10-04T17:51:09Z",
+   "checked_at": "2026-10-27T09:37:25Z",
    "last_change_at": "2026-10-04T17:47:15Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/4031f876-6476-49e7-a28d-b2d6380dfc8b",
    "source_file": "Qurrah users Q4 2025 XLSX.xlsx"
@@ -176,7 +176,7 @@
    "source": "odp",
    "status": "unchanged",
    "source_date": "2026-09-03",
-   "checked_at": "2026-10-04T17:51:09Z",
+   "checked_at": "2026-10-27T09:37:26Z",
    "last_change_at": "2026-10-04T17:47:15Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/d93d32ab-530b-4dd4-b27f-a42a25341786",
    "source_file": "Sports Facilities.xlsx"
@@ -184,9 +184,9 @@
   "odp_health_visits": {
    "name": "زيارات الرعاية الصحية الأولية حسب التجمعات",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2026-01-08",
-   "checked_at": "2026-10-04T17:51:08Z",
+   "checked_at": "2026-10-27T09:37:23Z",
    "last_change_at": "2026-10-04T17:51:08Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/6610fd74-8f0d-4296-8e9a-7fade1382def",
    "source_file": "MoH PHC Visits by Cluster and Age 2024.xlsx"
@@ -194,9 +194,9 @@
   "odp_disability_elderly": {
    "name": "كبار السن من ذوي الإعاقة",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2025-05-08",
-   "checked_at": "2026-10-04T17:51:08Z",
+   "checked_at": "2026-10-27T09:37:23Z",
    "last_change_at": "2026-10-04T17:51:08Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/51fedc99-df90-4c6f-9a0a-abdb1b3cd7c7",
    "source_file": "Q1 2025 Demographic data of Older WD  csv.xlsx"
@@ -204,9 +204,9 @@
   "odp_disability": {
    "name": "البيانات الديموغرافية لذوي الإعاقة",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2025-05-08",
-   "checked_at": "2026-10-04T17:51:08Z",
+   "checked_at": "2026-10-27T09:37:24Z",
    "last_change_at": "2026-10-04T17:51:09Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/b0b9016e-5406-4448-a532-06cfc37a399a",
    "source_file": "Q1 2025 Demographic data of PWD xlsx.xlsx"
@@ -214,9 +214,9 @@
   "odp_sports_centers": {
    "name": "الصالات والمراكز الرياضية المرخصة",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2026-09-09",
-   "checked_at": "2026-10-04T17:51:09Z",
+   "checked_at": "2026-10-27T09:37:26Z",
    "last_change_at": "2026-10-04T17:51:09Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/beb20c0d-2c9f-49ea-9952-6a41f915c985",
    "source_file": "Private Facilities.xlsx"
@@ -224,9 +224,9 @@
   "odp_nonprofit": {
    "name": "الكيانات غير الربحية حسب المنطقة (13 مجموعة)",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2026-03-09",
-   "checked_at": "2026-10-04T17:54:54Z",
+   "checked_at": "2026-10-27T09:37:26Z",
    "last_change_at": "2026-10-04T17:55:56Z",
    "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=الكيانات غير الربحية",
    "source_file": "14 ملفات: الكيانات غير الربحية"
@@ -236,7 +236,7 @@
    "source": "census_tableau",
    "status": "static",
    "source_date": null,
-   "checked_at": "2026-10-04T17:51:09Z",
+   "checked_at": "2026-10-27T09:37:29Z",
    "last_change_at": null,
    "source_url": null,
    "source_file": null
@@ -244,9 +244,9 @@
   "odp_students_directorates": {
    "name": "البيانات التعليمية للطلاب حسب الإدارات التعليمية (16 إدارة × سنة)",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2026-06-25",
-   "checked_at": "2026-10-05T15:45:31Z",
+   "checked_at": "2026-10-27T09:37:22Z",
    "last_change_at": "2026-10-05T15:45:48Z",
    "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=البيانات التعليمية الخاصة بالطلاب بالإدارة العامة للتعليم",
    "source_file": "16 ملفات: البيانات التعليمية الخاصة بالطلاب بالإدارة العامة للتعليم"
@@ -254,9 +254,9 @@
   "odp_schools_lists": {
    "name": "قوائم المدارس (حكومي + أهلي + عالمي وأجنبي) حسب الإدارة التعليمية والمرحلة",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2026-08-20",
-   "checked_at": "2026-10-05T15:53:23Z",
+   "checked_at": "2026-10-27T09:36:55Z",
    "last_change_at": "2026-10-05T15:53:41Z",
    "source_url": "https://open.data.gov.sa/ar/datasets?searchValue=أسماء مدارس التعليم",
    "source_file": "3 ملفات: أسماء مدارس التعليم"
@@ -284,9 +284,9 @@
   "odp_births": {
    "name": "المواليد الأحياء حسب فروع وزارة الصحة (كل القطاعات)",
    "source": "odp",
-   "status": "updated",
+   "status": "unchanged",
    "source_date": "2026-01-08",
-   "checked_at": "2026-10-05T17:23:30Z",
+   "checked_at": "2026-10-27T09:37:29Z",
    "last_change_at": "2026-10-05T17:23:48Z",
    "source_url": "https://open.data.gov.sa/ar/datasets/view/8861d0ef-d7b9-4320-89d5-c029bf9cc3ad",
    "source_file": "Live Births in all Health Sectors 2024.xlsx"
