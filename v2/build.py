@@ -324,7 +324,7 @@ R = lambda ind, label, key, name, sum_label=None, period=None: ("records_by_regi
 METRICS = {
     "population_housing": [
         ("region_table", "housing_bulletin", dict(sheet="1", cols={"الجملة": ("housing_units", "المساكن المشغولة بأسر سعودية"), "فيلا": ("housing_villa", "فلل"), "شقة": ("housing_apartment", "شقق"), "منزل شعبي": ("housing_traditional", "منازل شعبية"), "دور": ("housing_floor", "أدوار")})),
-        ("region_table", "housing_bulletin", dict(sheet="3", cols={"6+": ("hh_6plus", "مساكن تسكنها أسر من 6 أفراد فأكثر"), "1": ("hh_1", "مساكن يسكنها فرد واحد")})),
+        ("region_table", "housing_bulletin", dict(sheet="3", cols={"1": ("hh_1", "مساكن يسكنها فرد واحد"), "2": ("hh_2", "مساكن تسكنها أسر من فردين"), "3": ("hh_3", "مساكن تسكنها أسر من 3 أفراد"), "4": ("hh_4", "مساكن تسكنها أسر من 4 أفراد"), "5": ("hh_5", "مساكن تسكنها أسر من 5 أفراد"), "6+": ("hh_6plus", "مساكن تسكنها أسر من 6 أفراد فأكثر")})),
         ("births_branches", "odp_births", {}),
     ],
     "education": [

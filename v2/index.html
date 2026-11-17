@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>لوحة بيانات المملكة العربية السعودية</title>
-<meta name="description" content="مؤشرات مناطق المملكة الثلاث عشرة من مصادرها الرسمية، تُفحص آلياً كل يوم، وكل رقم يحمل تاريخ مصدره">
+<meta name="description" content="مؤشرات مناطق المملكة الثلاث عشرة من مصادرها الرسمية، وكل رقم يحمل تاريخ مصدره">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -38,6 +38,7 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .region-badge.active{display:inline-flex}
 .region-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold)}
 .reset-btn{display:none}.reset-btn.active{display:inline-block}
+.clear-all{border-color:var(--brick);color:var(--brick)}.clear-all:hover{background:var(--brick);border-color:var(--brick);color:#fff}
 .year-wrap{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .year-wrap select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line-2);border-radius:6px;background:var(--card);color:var(--ink)}
 
@@ -95,7 +96,7 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-top:14px}
 .grp-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
 .grp-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-.grp-row{display:grid;grid-template-columns:minmax(90px,1.2fr) 1fr 74px 36px;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px}
+.grp-row{display:grid;grid-template-columns:minmax(90px,1.2fr) 1fr 74px 44px;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px}
 .grp-row:hover{background:var(--bg)}
 .grp-row.on{background:var(--tint);box-shadow:inset 0 0 0 1px var(--navy-2)}
 .grp-l{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -103,8 +104,48 @@ h1,h2,h3,h4{font-weight:600;line-height:1.3}
 .grp-v{font-weight:600;color:var(--navy);text-align:left;direction:ltr;font-variant-numeric:tabular-nums}
 .grp-s{color:var(--muted);text-align:left;direction:ltr;font-size:11px}
 .grp-foot{font-size:11px;color:var(--muted);margin-top:6px}
+.grp-total{border-bottom:1px solid var(--line);border-radius:6px 6px 0 0;margin-bottom:4px;padding-bottom:7px}.grp-total .grp-l{font-weight:600;color:var(--ink);grid-column:span 2}
+.grp-sub{font-size:11.5px;color:var(--gold);font-weight:600;margin:9px 6px 2px}
+.grp-rest{cursor:default;color:var(--muted)}.grp-rest:hover{background:none}.grp-rest .grp-v{color:var(--muted);font-weight:500}.grp-rest .grp-bar i{background:#C3CAD5}
+.live-share{font-size:12px;color:var(--muted);margin-top:5px}.live-share b{color:var(--teal);font-weight:600}
+.cat-btn.dim{opacity:.42}
 .more-btn{margin:10px 0 4px}
 .live-group{display:none}
+#oldTab .filter-bar{display:none}
+.pc-note{font-size:12px;color:var(--muted);margin-right:6px}
+.pyr-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.pyr-head h3{margin-bottom:0}.pyr-head .filter-bar{margin-bottom:0}
+.pyr-stats{display:flex;gap:28px;flex-wrap:wrap;margin:14px 0 10px;padding:10px 14px;background:var(--bg);border-radius:6px}
+.pyr-stats b{display:block;font-size:19px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1.2}
+.pyr-stats span{font-size:12px;color:var(--muted)}
+.bd-hero{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px}
+.bd-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.bd-total,.bd-sel{border-radius:8px;padding:14px 16px;min-height:112px}
+.bd-total{background:var(--tint);cursor:pointer;border:1px solid transparent}
+.bd-total.on{border-color:var(--navy)}
+.bd-total .stat-v{font-size:34px}
+.bd-k{font-size:11.5px;font-weight:600;color:var(--gold);letter-spacing:.2px;margin-bottom:2px}
+.bd-n{font-size:13px;color:var(--ink-2);font-weight:500;margin-top:4px}.bd-n small{color:var(--muted);font-weight:400}
+.bd-sel{border:1px dashed var(--line-2);display:flex;flex-direction:column;justify-content:center}
+.has-sel .bd-sel{border:1px solid var(--gold);background:#FFFBF0}
+.bd-empty{color:var(--muted);font-size:12.5px;text-align:center;line-height:1.8}
+.bd-v{font-size:34px;font-weight:600;color:var(--gold);letter-spacing:-.3px;line-height:1.15;font-variant-numeric:tabular-nums}
+.bd-share{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:8px}
+.bd-share span{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;max-width:180px}.bd-share i{display:block;height:100%;background:var(--gold)}
+.bd-share b{color:var(--ink);font-size:13px}
+.bd-hint{font-size:12px;color:var(--muted);margin:12px 0 4px}
+.bd-parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-top:10px}
+.bd-part-t{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.bd-bar{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.bd-bar i{display:block;height:100%;min-width:2px}.bd-bar i.bd-pick{cursor:pointer}.bd-bar i.bd-pick.on{box-shadow:inset 0 0 0 2px var(--ink)}
+.bd-row{display:grid;grid-template-columns:12px 1fr auto 52px;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;font-size:13px}
+.bd-row.bd-pick{cursor:pointer}.bd-row.bd-pick:hover{background:var(--bg)}
+.bd-row.on{background:var(--tint);box-shadow:inset 0 0 0 1px var(--navy-2)}
+.bd-row.bd-rest{color:var(--muted)}
+.bd-dot{width:10px;height:10px;border-radius:2px}
+.bd-row b{font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;direction:ltr}.bd-row.bd-rest b{color:var(--muted);font-weight:500}
+.bd-row small{color:var(--muted);font-size:12px;text-align:left;direction:ltr}
+@media (max-width:700px){.bd-top{grid-template-columns:1fr}}
 .menu{position:relative}
 .menu-list{position:absolute;top:calc(100% + 6px);left:0;min-width:260px;background:var(--card);border:1px solid var(--line-2);border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,.12);z-index:70;padding:4px}
 .menu-list button{display:block;width:100%;text-align:right;background:none;border:0;padding:8px 12px;font-size:13px;color:var(--ink-2);cursor:pointer;border-radius:6px}
@@ -229,11 +270,12 @@ footer{max-width:1440px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:v
 <body>
 <header class="top"><div class="top-in">
   <div class="brand"><div class="mark"></div><div><h1>لوحة بيانات المملكة العربية السعودية</h1><p>تحليل شامل لبيانات 13 منطقة إدارية</p></div></div>
-  <div class="search" id="search"><svg viewBox="0 0 24 24"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"/></svg><input id="q" type="search" autocomplete="off" placeholder="ابحثي عن مؤشر أو منطقة أو قسم…  Ctrl+K"><div id="qRes" class="q-res" hidden></div></div>
+  <div class="search" id="search"><svg viewBox="0 0 24 24"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"/></svg><input id="q" type="search" autocomplete="off" placeholder="ابحث عن مؤشر أو منطقة أو قسم…  Ctrl+K"><div id="qRes" class="q-res" hidden></div></div>
   <div class="top-actions">
     <label class="year-wrap"><span>السنة</span><select id="yearSel" onchange="yearFilter=this.value;renderContent()"><option value="">الكل</option></select></label>
     <span id="regionBadge" class="region-badge"><span id="badgeIcon" hidden></span><span id="badgeName"></span></span>
-    <button id="resetBtn" class="btn reset-btn" onclick="resetSelection()">إلغاء التحديد</button>
+    <button id="resetBtn" class="btn reset-btn" onclick="resetSelection()">إلغاء المنطقة</button>
+    <button id="clearAllBtn" class="btn reset-btn clear-all" onclick="clearAll()" title="إزالة المنطقة والسنة وتلوين الخريطة وكل الفلاتر دفعة واحدة">✕ مسح كل التحديدات</button>
     <div class="menu"><button class="btn" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">تنزيل البيانات ▾</button><div class="menu-list" hidden>
       <button onclick="exportAll('xlsx')">كل المؤشرات — Excel (ورقة لكل قسم)</button>
       <button onclick="exportAll('csv')">كل المؤشرات — CSV</button>
@@ -247,7 +289,7 @@ footer{max-width:1440px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:v
   <nav class="side"><div class="nav-group g-live"><div class="nav-title">المؤشرات الحيّة</div><button class="cat-btn" data-cat="population_housing" onclick="selectCategory('population_housing')"><i class="ic" data-ic="population_housing"></i><span>السكان والإسكان</span></button><button class="cat-btn" data-cat="education" onclick="selectCategory('education')"><i class="ic" data-ic="education"></i><span>التعليم</span></button><button class="cat-btn" data-cat="health" onclick="selectCategory('health')"><i class="ic" data-ic="health"></i><span>الصحة</span></button><button class="cat-btn" data-cat="disability" onclick="selectCategory('disability')"><i class="ic" data-ic="disability"></i><span>ذوو الإعاقة</span></button><button class="cat-btn" data-cat="labor" onclick="selectCategory('labor')"><i class="ic" data-ic="labor"></i><span>سوق العمل والمنشآت</span></button><button class="cat-btn" data-cat="sports" onclick="selectCategory('sports')"><i class="ic" data-ic="sports"></i><span>الرياضة</span></button><button class="cat-btn" data-cat="nonprofit" onclick="selectCategory('nonprofit')"><i class="ic" data-ic="nonprofit"></i><span>القطاع غير الربحي</span></button><button class="cat-btn" data-cat="security" onclick="selectCategory('security')"><i class="ic" data-ic="security"></i><span>الأمن والطوارئ</span></button><button class="cat-btn" data-cat="infrastructure" onclick="selectCategory('infrastructure')"><i class="ic" data-ic="infrastructure"></i><span>الخدمات البلدية</span></button><button class="cat-btn" data-cat="tourism" onclick="selectCategory('tourism')"><i class="ic" data-ic="tourism"></i><span>السياحة والضيافة</span></button><button class="cat-btn" data-cat="real_estate" onclick="selectCategory('real_estate')"><i class="ic" data-ic="real_estate"></i><span>العقارات</span></button><button class="cat-btn" data-cat="religious" onclick="selectCategory('religious')"><i class="ic" data-ic="religious"></i><span>الشؤون الدينية</span></button><button class="cat-btn" data-cat="commerce" onclick="selectCategory('commerce')"><i class="ic" data-ic="commerce"></i><span>التجارة</span></button><button class="cat-btn" data-cat="women" onclick="selectCategory('women')"><i class="ic" data-ic="women"></i><span>المرأة</span></button></div><div class="nav-group g-analysis"><div class="nav-title">التحليل</div><button class="cat-btn" data-cat="comparison" onclick="selectCategory('comparison')"><i class="ic" data-ic="comparison"></i><span>مقارنة المناطق</span></button><button class="cat-btn" data-cat="executive_summary" onclick="selectCategory('executive_summary')"><i class="ic" data-ic="executive_summary"></i><span>الملخص التنفيذي</span></button></div><div class="nav-group g-census"><div class="nav-title">تعداد 2022</div><button class="cat-btn" data-cat="census_population" onclick="selectCategory('census_population')"><i class="ic" data-ic="census_population"></i><span>التركيبة السكانية</span></button><button class="cat-btn" data-cat="census_nationality" onclick="selectCategory('census_nationality')"><i class="ic" data-ic="census_nationality"></i><span>الجنسية</span></button><button class="cat-btn" data-cat="census_marital" onclick="selectCategory('census_marital')"><i class="ic" data-ic="census_marital"></i><span>الحالة الاجتماعية</span></button><button class="cat-btn" data-cat="census_growth" onclick="selectCategory('census_growth')"><i class="ic" data-ic="census_growth"></i><span>النمو السكاني</span></button><button class="cat-btn" data-cat="census_dependency" onclick="selectCategory('census_dependency')"><i class="ic" data-ic="census_dependency"></i><span>الإعالة</span></button><button class="cat-btn" data-cat="census_households" onclick="selectCategory('census_households')"><i class="ic" data-ic="census_households"></i><span>تركيبة الأسر</span></button><button class="cat-btn" data-cat="census_buildings" onclick="selectCategory('census_buildings')"><i class="ic" data-ic="census_buildings"></i><span>المساكن</span></button><button class="cat-btn" data-cat="census_units" onclick="selectCategory('census_units')"><i class="ic" data-ic="census_units"></i><span>الوحدات السكنية</span></button></div><div class="nav-group g-ref"><div class="nav-title">المرجع</div><button class="cat-btn" data-cat="methodology" onclick="selectCategory('methodology')"><i class="ic" data-ic="methodology"></i><span>المنهجية</span></button></div></nav>
   <main class="content">
     <section class="panel map-section">
-      <div class="sec-head"><div><div class="eyebrow">المناطق الإدارية</div><h2>خريطة المملكة</h2></div><span class="map-hint">اختاري منطقة من الخريطة لعرض كل مؤشراتها</span></div>
+      <div class="sec-head"><div><div class="eyebrow">المناطق الإدارية</div><h2>خريطة المملكة</h2></div><span class="map-hint">اختر منطقة من الخريطة لعرض كل مؤشراتها</span></div>
       <div class="map-wrap">
         <div class="map-container"><svg id="saudi-map" viewBox="0 0 730 600" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Saudi Arabia">
           <path id="ryiadh" data-region="الرياض" d="m 456.82718,487.03041 -10.13,2.63 -16.39,2.39 -58.85,5.04 -8.85,-0.7 -3.24,-0.72 -5.22,-2.39 -8.51,-5.59 0,0 -13.54,-12.09 -3.91,-6.36 -2.75,-2.96 -0.22,-1.6 1.23,-6.11 3.34,-6.09 0.08,-2.96 -1.06,-1.73 -3.6,-3.6 -3.07,-4.93 -5.76,-5.01 0,0 -4.34,-7.06 -4.77,-6.36 -0.58,-1.47 1.76,-8.48 -0.54,-6.95 2.33,-3.42 0.68,-2.34 -1.79,-13.1 0.96,-6.16 -0.31,-1.57 -6.45,-1.41 -5.65,1.47 -3.7,-1.28 -1.26,-2.3 0.28,-5.34 0.86,-2.93 -1.84,-1.88 -3.09,-0.85 -14.1,-0.63 -3.01,-1.63 -5.15,-11.26 -0.91,-5.64 -2.1,-4.72 -1.13,-4.86 -4.16,-3.3 -0.36,-3.13 0.44,-3.64 0,0 -0.04,-9.03 1.41,-4.88 -0.94,-3.6 2.95,-4.25 0.4,-3.14 0,0 3.04,-5.08 2.17,-1.58 1.5,0.12 5.17,2.55 3.87,0.81 5.73,0.5 5.67,-0.89 5.69,0.87 2.43,-1.79 0.85,-2.18 -1.91,-3.83 0.15,-2.3 5.42,-6.69 3.27,-2.52 12.88,-3.15 2.84,-2.81 3.09,-1.74 2.28,-4.47 2.02,-1.97 3.13,-0.82 8.3,1.06 7.2,-0.68 5.53,0.22 0.84,-3.9 -0.31,-3.16 -2.52,-4.86 1.08,-2.91 -0.14,-0.86 -6.69,-10.16 -3.6,-3.57 -0.49,-1.52 0.84,-5.74 -0.43,-5.12 4.01,-1.1 4.5,-5.87 2.46,-2.11 4.18,-1.84 0.62,-1.48 -0.15,-2.5 -1.34,-2.5 -3.6,-2.99 -2.35,-0.93 0,0 -0.68,-1.88 0.06,-1.59 0.99,-3.1 2.42,-3.32 3.15,-1.64 0,0 1.94,2.12 1.51,0.52 1.8,-0.86 1.3,-2.23 0,0 3.32,2.32 2.12,2.21 1.4,5.11 1.24,1.53 10.41,6.08 5.75,1.06 3.46,4.22 4.06,3.38 2.34,0.63 5.64,0.11 3.01,0.81 9.86,6.94 2.49,1.19 2.36,0.05 4.41,-1.01 1.55,0.22 6.45,6.08 1.47,2.52 8.88,3.16 3.86,2.08 1.09,2.56 0.43,4.96 0.38,22.63 -0.63,15.07 0.35,7.41 0.68,3.7 1.12,1.79 2.28,1.8 9.44,6.3 9.19,9.16 1.68,2.06 2.95,5.78 1.36,6.89 -0.02,7.75 z"/>
@@ -285,6 +327,7 @@ footer{max-width:1440px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:v
             <select id="heatmapSelect" onchange="applyHeatMap(this.value)">
               <option value="">بدون تلوين</option>
               <optgroup label="أعداد"><option value="population">السكان</option><option value="saudi">السكان السعوديون</option><option value="schools">المدارس</option><option value="hospitals">الزيارات الصحية</option><option value="workers">العاملون</option><option value="hotels">الفنادق</option><option value="mosques">المساجد</option></optgroup>
+              <optgroup label="معدلات"><option value="mosques_pc">المساجد لكل 10 آلاف نسمة</option></optgroup>
             </select>
             <div class="heatmap-legend" id="heatmapLegend" style="display:none"><span>أدنى</span><div class="heatmap-gradient"></div><span>أعلى</span></div>
             <button class="heatmap-reset" id="heatmapReset" style="display:none" onclick="resetHeatMap()">إزالة التلوين</button>
@@ -298,7 +341,7 @@ footer{max-width:1440px;margin:0 auto;padding:0 28px 40px;font-size:12px;color:v
     <div id="contentArea">
       <div id="welcomeScreen" class="welcome-screen fade-in">
         <div class="eyebrow">نظرة عامة</div><h2>المؤشرات الرئيسية</h2>
-        <p>اضغطي على أي بطاقة للدخول إلى قسمها، أو اختاري منطقة من الخريطة.</p>
+        <p>اضغط على أي بطاقة للدخول إلى قسمها، أو اختر منطقة من الخريطة.</p>
         <div class="kpi-wall" id="kpiWall"></div>
         <div class="eyebrow" style="margin-top:22px">المناطق</div>
         <div class="region-overview" id="regionOverview"></div>
@@ -3138,7 +3181,8 @@ function kpiSection(kpis) { if (!kpis || !kpis.length) return ''; return `<div c
 function sourceBox(sources) { if (!sources || !sources.length) return ''; const list = Array.isArray(sources) ? sources : [sources]; return '<div class="source-box">' + list.map((s, i) => typeof s === 'string' ? `<div class="source-row">${i === 0 ? '<span class="source-label">المصدر:</span>' : ''}<span>${strip(s)}</span></div>` : `<div class="source-row">${i === 0 ? '<span class="source-label">المصدر:</span>' : ''}<span>${strip(s.name || '')}</span>${s.publisher ? `<span class="source-publisher">· ${strip(s.publisher)}</span>` : ''}${s.link ? `<a class="source-link" href="${s.link}" target="_blank" rel="noopener">رابط المصدر</a>` : ''}</div>`).join('') + '</div>'; }
 function exportBar(k) { return `<div class="export-bar"><button class="export-btn" onclick="exportCSV('${k}')">تصدير CSV</button><button class="export-btn" onclick="exportJSON('${k}')">تصدير JSON</button></div>`; }
 
-// ----- الخريطة: تدرج كحلي واحد + مؤشر الفجوة -----
+// ----- الخريطة: تدرج كحلي واحد -----
+HEAT_CONFIGS.mosques_pc = { label: 'المساجد لكل 10 آلاف نسمة', get: r => { const p = DATA.categories.population_housing.population[r]; return p && p.total ? HEAT_CONFIGS.mosques.get(r) / p.total * 1e4 : 0; } };
 applyHeatMap = function (indicator) {
   heatMapIndicator = indicator;
   const legend = document.getElementById('heatmapLegend'), resetBtn = document.getElementById('heatmapReset');
@@ -3147,22 +3191,163 @@ applyHeatMap = function (indicator) {
   const values = DATA.regions.map(r => cfg.get(r)); const min = Math.min(...values), max = Math.max(...values);
   document.querySelectorAll('#saudi-map path').forEach(p => { const t = max > min ? (cfg.get(p.dataset.region) - min) / (max - min) : .5; const mix = (a, b) => Math.round(a + (b - a) * t); p.style.fill = `rgb(${mix(227, 19)},${mix(234, 49)},${mix(245, 92)})`; p.style.opacity = ''; });
   document.querySelectorAll('#saudi-map .region-label').forEach(t => { const v = cfg.get(t.dataset.label); t.style.fill = (max > min ? (v - min) / (max - min) : .5) > .55 ? '#fff' : '#374151'; });
-  if (legend) legend.style.display = 'flex'; if (resetBtn) resetBtn.style.display = 'inline-block';
+  if (legend) legend.style.display = 'flex'; if (resetBtn) resetBtn.style.display = 'inline-block'; syncClear();
 };
-resetHeatMap = function () { heatMapIndicator = null; const s = document.getElementById('heatmapSelect'); if (s) s.value = ''; const l = document.getElementById('heatmapLegend'), b = document.getElementById('heatmapReset'); if (l) l.style.display = 'none'; if (b) b.style.display = 'none'; document.querySelectorAll('#saudi-map path').forEach(p => { p.style.fill = ''; p.style.opacity = ''; }); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = ''); };
+resetHeatMap = function () { heatMapIndicator = null; const s = document.getElementById('heatmapSelect'); if (s) s.value = ''; const l = document.getElementById('heatmapLegend'), b = document.getElementById('heatmapReset'); if (l) l.style.display = 'none'; if (b) b.style.display = 'none'; document.querySelectorAll('#saudi-map path').forEach(p => { p.style.fill = ''; p.style.opacity = ''; }); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = ''); syncClear(); };
 
 // ----- المحتوى: نُنقّي الإيموجي بعد كل عرض -----
 const _selectRegion = selectRegion, _resetSelection = resetSelection;
 selectRegion = function (region) { _selectRegion(region); document.querySelectorAll('#saudi-map .region-label').forEach(t => t.style.fill = (t.dataset.label === region) ? '#fff' : (heatMapIndicator ? t.style.fill : '')); };
 resetSelection = function () { _resetSelection(); document.querySelectorAll('#saudi-map .region-label').forEach(t => { if (!heatMapIndicator) t.style.fill = ''; }); };
 const _renderContent = renderContent;
-renderContent = function () { _renderContent(); deEmoji(document.getElementById('dataContent')); deEmoji(document.getElementById('welcomeScreen')); };
+renderContent = function () { metricPicked = false; _renderContent(); if (selectedCategory === 'census_population') enhancePyramid(selectedRegion); if (selectedCategory === 'census_nationality') enhanceNationality(selectedRegion); syncYearNav(); deEmoji(document.getElementById('dataContent')); deEmoji(document.getElementById('welcomeScreen')); syncClear(); };
+// ----- قسم الجنسية حسب المنطقة المختارة (من ملف التعداد التفصيلي) -----
+function enhanceNationality(r) {
+  const C = DATA.categories.census_population, R = r && C && C.pyramid_detail && C.pyramid_detail.regions[r]; if (!R) return;
+  const content = document.getElementById('dataContent'), sum = a => a.reduce((x, y) => x + y, 0);
+  const sM = sum(R.saudi.m), sF = sum(R.saudi.f), nM = sum(R.non_saudi.m), nF = sum(R.non_saudi.f), S = sM + sF, N = nM + nF, T = S + N;
+  const h2 = content.querySelector('h2'); if (h2) h2.textContent += ' — ' + r;
+  const grid = content.querySelector('.summary-grid'); if (grid) grid.innerHTML = summaryCard('', formatNum(T), 'إجمالي سكان ' + r) + summaryCard('', (N / T * 100).toFixed(1) + '%', 'نسبة السكان غير السعوديين') + summaryCard('', formatNum(S), 'السكان السعوديون') + summaryCard('', formatNum(N), 'السكان غير السعوديين');
+  const swap = (id, nid) => { const o = document.getElementById(id); if (!o) return null; const n = document.createElement('canvas'); n.id = nid; o.replaceWith(n); return n; };
+  const d = swap('cnDonut', 'cnDonut2'), g = swap('cnGender', 'cnGender2');
+  if (d) charts.cnDonut2 = new Chart(d, { type: 'doughnut', data: { labels: ['سعودي', 'غير سعودي'], datasets: [{ data: [S, N] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', rtl: true, labels: {} }, tooltip: { callbacks: { label: x => ` ${x.label}: ${formatNum(x.raw)} (${(x.raw / T * 100).toFixed(1)}%)` } } } } });
+  if (g) charts.cnGender2 = new Chart(g, { type: 'bar', data: { labels: ['سعودي', 'غير سعودي'], datasets: [{ label: 'ذكور %', data: [+(sM / S * 100).toFixed(1), +(nM / N * 100).toFixed(1)], backgroundColor: PALETTE[0] }, { label: 'إناث %', data: [+(sF / S * 100).toFixed(1), +(nF / N * 100).toFixed(1)], backgroundColor: PALETTE[1] }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, rtl: true, labels: {} } }, scales: { x: { stacked: true, max: 100 }, y: { stacked: true } } } });
+  const t = document.getElementById('cnTop'), th = t && t.closest('.detail-card').querySelector('h3'); if (th) th.insertAdjacentHTML('beforeend', ' <small>· إجمالي المملكة (غير متاح حسب المنطقة)</small>');
+}
+function syncYearNav() {
+  if (!LIVE) return;
+  document.querySelectorAll('.cat-btn').forEach(b => { const c = LIVE.categories[b.dataset.cat]; let sp = b.querySelector('.nav-count');
+    if (!c || !yearFilter) { if (sp) sp.remove(); b.classList.remove('dim'); return; }
+    const n = c.metrics.filter(inYear).length; if (!sp) { sp = document.createElement('span'); sp.className = 'nav-count'; b.appendChild(sp); }
+    sp.textContent = n; sp.title = `${n} مقياساً في سنة ${yearFilter}`; b.classList.toggle('dim', !n); });
+}
+// ----- مسح كل التحديدات: المنطقة، السنة، تلوين الخريطة، الفلاتر، المقياس المختار، التبويب، البحث -----
+let metricPicked = false;
+function anySelection() { return !!(selectedRegion || yearFilter || heatMapIndicator || perCap || pyrNat !== 'all' || (pyrCmp && selectedRegion && selectedCategory === 'census_population') || populationFilter !== 'all' || metricPicked || lastTab.t !== 'live'); }
+function syncClear() { const b = document.getElementById('clearAllBtn'); if (b) b.classList.toggle('active', anySelection()); }
+function clearAll() {
+  yearFilter = ''; const ys = document.getElementById('yearSel'); if (ys) ys.value = '';
+  perCap = false; pyrNat = 'all'; pyrCmp = false; populationFilter = 'all'; lastTab = { cat: '', t: 'live' };
+  const q = document.getElementById('q'), qr = document.getElementById('qRes'); if (q) q.value = ''; if (qr) qr.hidden = true;
+  resetHeatMap(); resetSelection();
+}
 
 function dstr(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString('ar-SA-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return s; } }
 function freshClass(d) { if (!d) return 'static'; const days = (Date.now() - new Date(d)) / 864e5; return days <= 120 ? 'fresh' : days <= 400 ? 'year' : 'old'; }
 function freshWord(d) { return { fresh: 'نُشر خلال 4 أشهر', year: 'نُشر خلال سنة', old: 'لم يُحدَّث عند المصدر منذ أكثر من سنة', static: 'ثابت' }[freshClass(d)]; }
-function fmtv(m, v) { if (v == null) return '—'; if (m.key === 'repi' || m.agg === 'mean') return Number(v).toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 2 }); return Math.round(v).toLocaleString('ar-SA-u-nu-latn'); }
+function fmtv(m, v) { if (v == null) return '—'; if (m.pc) { const dg = Math.abs(v) < 1 ? 2 : 1; return Number(v).toLocaleString('ar-SA-u-nu-latn', { minimumFractionDigits: dg, maximumFractionDigits: dg }); } if (m.key === 'repi' || m.agg === 'mean') return Number(v).toLocaleString('ar-SA-u-nu-latn', { maximumFractionDigits: 2 }); return Math.round(v).toLocaleString('ar-SA-u-nu-latn'); }
 function mval(m, r) { return r ? m.values[r] : m.total; }
+function shareLine(m, r) { const v = r ? m.values[r] : null; if (v == null || m.agg || m.pc || m.key === 'repi' || !(m.total > 0)) return ''; return `<div class="live-share"><b>${(v / m.total * 100).toFixed(1)}%</b> من إجمالي المملكة</div>`; }
+
+// ----- المعدل لكل 10 آلاف نسمة (خيار عرض للأقسام المحددة في PER_CAP) -----
+let perCap = false, lastTab = { cat: '', t: 'live' };
+const PER_CAP = { religious: 1, health: 1, education: 1, security: 1, commerce: 1 };
+function popOf(r) { const p = DATA.categories.population_housing.population; return r ? ((p[r] || {}).total || 0) : DATA.regions.reduce((s, x) => s + ((p[x] || {}).total || 0), 0); }
+function perCapMetric(m) { if (m.agg || m.key === 'repi') return m; const values = {}; LIVE.regions.forEach(x => { const p = popOf(x); values[x] = (m.values[x] != null && p) ? m.values[x] / p * 1e4 : null; }); const tp = popOf(); return { ...m, values, total: (tp && m.total != null) ? m.total / tp * 1e4 : null, pc: true, name: m.name + ' لكل 10 آلاف نسمة', series: null }; }
+
+// ----- إجمالي ثابت + توزيعه: الإجمالي يبقى ظاهراً، والأجزاء تُعرض كحصص منه -----
+const BREAKDOWN = {
+  population_housing: { total: 'housing_units',
+    parts: [
+      { title: 'حسب نوع المسكن', keys: ['housing_apartment', 'housing_villa', 'housing_traditional', 'housing_floor'], rest: 'أنواع أخرى' },
+      { title: 'حسب عدد أفراد الأسرة', keys: ['hh_1', 'hh_2', 'hh_3', 'hh_4', 'hh_5', 'hh_6plus'], rest: 'غير مبيّن', fixed: true, ramp: true }
+    ],
+    short: { hh_1: 'فرد واحد', hh_2: 'فردان', hh_3: '3 أفراد', hh_4: '4 أفراد', hh_5: '5 أفراد', hh_6plus: '6 أفراد فأكثر' },
+    full: { housing_villa: 'الفلل المشغولة بأسر سعودية', housing_apartment: 'الشقق المشغولة بأسر سعودية', housing_traditional: 'المنازل الشعبية المشغولة بأسر سعودية', housing_floor: 'الأدوار المشغولة بأسر سعودية', hh_1: 'المساكن التي يسكنها فرد واحد (سعودي)', hh_6plus: 'المساكن التي تسكنها أسر سعودية من 6 أفراد فأكثر' } }
+};
+const FULL_NAME = Object.assign({}, ...Object.values(BREAKDOWN).map(b => b.full || {}));
+const fullName = m => FULL_NAME[m.key] || m.name;
+function breakdownHero(c, BD, ti, r) {
+  const T = c.metrics[ti]; const tv = mval(T, r) || 0; const pct = v => tv ? v / tv * 100 : 0;
+  const parts = BD.parts.map(p => {
+    const items = p.keys.map(k => { const i = c.metrics.findIndex(m => m.key === k); return i < 0 ? null : { i, v: mval(c.metrics[i], r) || 0, label: (BD.short || {})[k] || c.metrics[i].name }; }).filter(Boolean);
+    if (!items.length) return '';
+    if (!p.fixed) items.sort((a, b) => b.v - a.v);
+    const ramp = k => { const t = items.length > 1 ? k / (items.length - 1) : 1, mix = (a, b) => Math.round(a + (b - a) * t); return `rgb(${mix(190, 19)},${mix(206, 49)},${mix(232, 92)})`; };
+    const segs = items.map((x, k) => ({ ...x, color: p.ramp ? ramp(k) : PALETTE[k % PALETTE.length] }));
+    const rest = tv - items.reduce((s, x) => s + x.v, 0);
+    if (rest > tv * 0.0005) segs.push({ i: -1, v: rest, label: p.rest || 'أخرى', color: '#C3CAD5' });
+    return `<div class="bd-part"><div class="bd-part-t">${p.title}</div>
+      <div class="bd-bar">${segs.map(s => `<i ${s.i >= 0 ? `class="bd-pick" data-i="${s.i}"` : ''} style="width:${pct(s.v)}%;background:${s.color}" title="${s.label}: ${fmtv(T, s.v)} (${pct(s.v).toFixed(1)}%)"></i>`).join('')}</div>
+      <div class="bd-rows">${segs.map(s => `<div class="bd-row ${s.i >= 0 ? 'bd-pick' : 'bd-rest'}" ${s.i >= 0 ? `data-i="${s.i}"` : ''}><span class="bd-dot" style="background:${s.color}"></span><span class="bd-l">${s.label}</span><b>${fmtv(T, s.v)}</b><small>${pct(s.v).toFixed(1)}%</small></div>`).join('')}</div></div>`;
+  }).join('');
+  return `<div class="bd-hero" id="bdHero" data-total="${ti}">
+    <div class="bd-top">
+      <div class="bd-total bd-pick" data-i="${ti}"><div class="bd-k">الإجمالي — ${r || 'المملكة'}</div><div class="stat-v">${fmtv(T, tv)}</div><div class="bd-n">${T.name} <small>· بيانات ${T.period || ''}</small></div>${shareLine(T, r)}</div>
+      <div class="bd-sel" id="bdSel"></div>
+    </div>
+    <div class="bd-hint">الإجمالي ثابت، وما تحته توزيع له. اضغط أي جزء ليظهر عدده ونسبته من الإجمالي وتوزيعه على المناطق.</div>
+    <div class="bd-parts">${parts}</div></div>`;
+}
+function updateHero(c, i, r) {
+  const hero = document.getElementById('bdHero'); if (!hero) return;
+  const ti = +hero.dataset.total, T = c.metrics[ti], m = c.metrics[i], tv = mval(T, r) || 0;
+  const isPart = i !== ti && !!hero.querySelector(`.bd-row[data-i="${i}"]`);
+  hero.querySelectorAll('.bd-pick').forEach(x => x.classList.toggle('on', +x.dataset.i === i));
+  hero.classList.toggle('has-sel', isPart);
+  const sel = document.getElementById('bdSel');
+  if (!isPart) { sel.innerHTML = `<div class="bd-empty">اختر جزءاً من التوزيع أدناه<br>ليظهر هنا عدده ونسبته من الإجمالي</div>`; return; }
+  const v = mval(m, r) || 0, p = tv ? v / tv * 100 : 0;
+  sel.innerHTML = `<div class="bd-k">من الإجمالي</div><div class="bd-v">${fmtv(m, v)}</div><div class="bd-n">${fullName(m)}</div><div class="bd-share"><span><i style="width:${p}%"></i></span><b>${p.toFixed(1)}%</b> من ${fmtv(T, tv)}</div>`;
+}
+
+// ----- لوحة تفصيل: الإجمالي الأب في الأعلى، والنسب منه لا من مجموع الصفوف -----
+const GROUP_PARENT = [[/^births_/, 'births'], [/^pwd_(type|sev|job|sex|edu)_/, 'pwd'], [/^eld_/, 'pwd_elderly'], [/^np_/, 'entities'], [/^qurra_(mar|dis)_/, 'qurra_children']];
+const SUBHEAD = { births_cs: 'حسب نوع الولادة', births_male: 'حسب الجنس', births_saudi: 'حسب الجنسية' };
+const parentKey = k => { const x = GROUP_PARENT.find(([re]) => re.test(k)); return x ? x[1] : null; };
+const pctTxt = v => v.toFixed(v < 10 ? 1 : 0) + '%';
+function groupPanel(G, c, r) {
+  const rowLabel = m => m.name.replace(/^[^:]+:\s*/, '').replace(/^(سعوديون|غير سعوديين|طلاب|كبار السن|إشراف|إعاقة|شدة|متزوجة\?|لديه إعاقة\?)\s*/, '');
+  const isRate = G.items.some(([m]) => m.agg);
+  const pk = G.items.map(([m]) => parentKey(m.key)).find(Boolean);
+  const P = (pk && !isRate) ? c.metrics.find(m => m.key === pk) : null;
+  const parts = G.items.filter(([m]) => !P || m.key !== pk);
+  const vals = parts.map(([m]) => mval(m, r) || 0), sum = vals.reduce((a, b) => a + b, 0), mx = Math.max(...vals, 1);
+  const denom = isRate ? 0 : (P ? (mval(P, r) || 0) : sum);
+  const hasSub = parts.some(([m]) => SUBHEAD[m.key]);
+  let rows = '';
+  if (P) rows += `<div class="grp-row grp-total" data-i="${c.metrics.indexOf(P)}"><span class="grp-l" title="${P.name}">الإجمالي: ${P.name}</span><b class="grp-v">${fmtv(P, mval(P, r))}</b><small class="grp-s">100%</small></div>`;
+  parts.forEach(([m, i], k) => { const v = vals[k]; const share = denom ? v / denom * 100 : null;
+    if (SUBHEAD[m.key]) rows += `<div class="grp-sub">${SUBHEAD[m.key]}</div>`;
+    rows += `<div class="grp-row" data-i="${i}"><span class="grp-l" title="${m.name}">${rowLabel(m)}</span><span class="grp-bar"><i style="width:${Math.max(2, share != null ? Math.min(100, share) : v / mx * 100)}%"></i></span><b class="grp-v">${fmtv(m, v)}</b><small class="grp-s">${share != null ? pctTxt(share) : ''}</small></div>`; });
+  const rest = denom - sum;
+  if (P && !hasSub && rest > denom * 0.005) rows += `<div class="grp-row grp-rest"><span class="grp-l">أخرى</span><span class="grp-bar"><i style="width:${rest / denom * 100}%"></i></span><b class="grp-v">${fmtv(P, rest)}</b><small class="grp-s">${pctTxt(rest / denom * 100)}</small></div>`;
+  return `<div class="grp-panel"><div class="grp-title">${G.g}</div>${rows}<div class="grp-foot">بيانات ${G.items[0][0].period || ''}${P ? ' · النسب من الإجمالي' : (denom ? ' · النسب من مجموع الفئات' : '')} · اضغط صفاً لعرضه حسب المناطق</div></div>`;
+}
+
+// ----- الهرم السكاني التفاعلي: يتبع المنطقة المختارة وفلتر الجنسية -----
+let pyrNat = 'all', pyrCmp = false;
+const PYR_NAT = { all: 'كل السكان', saudi: 'سعوديون', non_saudi: 'غير سعوديين' };
+function drawPyramid(r) {
+  const P = DATA.categories.census_population.pyramid_detail, R = P.regions[r || 'المملكة'], cv = document.getElementById('cpPyr2'); if (!R || !cv) return;
+  const sum = a => a.reduce((x, y) => x + y, 0), pickOf = (X, s) => pyrNat === 'all' ? X.saudi[s].map((v, k) => v + X.non_saudi[s][k]) : X[pyrNat][s];
+  let M = pickOf(R, 'm'), F = pickOf(R, 'f'); const sm = sum(M), sf = sum(F), tot = sm + sf;
+  const all = sum(R.saudi.m) + sum(R.saudi.f) + sum(R.non_saudi.m) + sum(R.non_saudi.f);
+  const cmp = pyrCmp && !!r;
+  document.querySelectorAll('#pyrFilter .filter-btn[data-n]').forEach(b => b.classList.toggle('active', b.dataset.n === pyrNat));
+  const cb = document.getElementById('pyrCmpBtn'); if (cb) cb.classList.toggle('active', cmp);
+  document.getElementById('pyrTitle').innerHTML = `الهرم السكاني — ${r || 'المملكة'} <small>· ${PYR_NAT[pyrNat]} · تعداد 2022${cmp ? ' · كل فئة كنسبة من السكان، والخط المتقطع = المملكة' : ''}</small>`;
+  const st = (v, l) => `<div><b>${formatNum(v)}</b><span>${l}</span></div>`;
+  document.getElementById('pyrStats').innerHTML = st(tot, PYR_NAT[pyrNat] + (pyrNat === 'all' ? '' : ` · ${(tot / all * 100).toFixed(1)}% من سكان ${r || 'المملكة'}`)) + st(sm, `ذكور · ${(sm / tot * 100).toFixed(1)}%`) + st(sf, `إناث · ${(sf / tot * 100).toFixed(1)}%`);
+  const rev = a => [...a].reverse(); let lines = [], KM = [], KF = [];
+  if (cmp) { const K = P.regions['المملكة'], km = pickOf(K, 'm'), kf = pickOf(K, 'f'), kt = sum(km) + sum(kf); M = M.map(v => v / tot * 100); F = F.map(v => v / tot * 100); KM = km.map(v => v / kt * 100); KF = kf.map(v => v / kt * 100);
+    const ln = d => ({ type: 'line', label: 'المملكة', data: d, borderColor: '#333333', backgroundColor: '#333333', borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 3, tension: 0, order: 0 });
+    lines = [ln(rev(KM).map(v => -v)), ln(rev(KF))]; }
+  const top = Math.max(...M, ...F, ...KM, ...KF, cmp ? 0.1 : 1), stepX = Math.pow(10, Math.floor(Math.log10(top))) / 2, mx = Math.ceil(top * 1.02 / stepX) * stepX;
+  const fx = v => cmp ? Math.abs(v).toFixed(2) + '%' : formatNum(Math.abs(v)) + ' (' + (Math.abs(v) / tot * 100).toFixed(1) + '%)';
+  if (charts.cpPyr2) charts.cpPyr2.destroy();
+  charts.cpPyr2 = new Chart(cv, { type: 'bar', data: { labels: rev(P.ages), datasets: [{ label: 'ذكور', data: rev(M).map(v => -v), backgroundColor: PALETTE[0], order: 1 }, { label: 'إناث', data: rev(F), backgroundColor: PALETTE[1], order: 1 }, ...lines] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, interaction: { mode: 'index', axis: 'y', intersect: false }, plugins: { legend: { display: true, rtl: true, labels: { filter: it => it.datasetIndex !== 3 } }, tooltip: { callbacks: { label: x => ` ${x.dataset.label}${x.dataset.type === 'line' ? (x.datasetIndex === 2 ? ' — ذكور' : ' — إناث') : ''}: ${fx(x.raw)}` } } },
+      scales: { x: { min: -mx, max: mx, ticks: { callback: v => cmp ? Math.abs(v) + '%' : shortNum(Math.abs(v)) } }, y: { stacked: true, grid: { display: false } } } } });
+}
+function enhancePyramid(r) {
+  const C = DATA.categories.census_population; if (!C || !C.pyramid_detail) return;
+  const content = document.getElementById('dataContent'); const old = document.getElementById('cpPyramid'); if (old) old.closest('.detail-grid').remove();
+  const anchor = content.querySelector('.summary-grid'); if (!anchor) return;
+  anchor.insertAdjacentHTML('afterend', `<div class="detail-grid"><div class="detail-card full-width"><div class="pyr-head"><h3 id="pyrTitle"></h3><div class="filter-bar" id="pyrFilter"><label>الجنسية:</label>${Object.entries(PYR_NAT).map(([k, n]) => `<button class="filter-btn" data-n="${k}">${n}</button>`).join('')}${r ? '<label style="margin-right:10px">العرض:</label><button class="filter-btn" id="pyrCmpBtn">مقارنة بالمملكة</button>' : ''}</div></div><div class="pyr-stats" id="pyrStats"></div><div class="chart-container" style="height:520px"><canvas id="cpPyr2"></canvas></div><div class="live-src"><span>المصدر: الهيئة العامة للإحصاء — تعداد السعودية 2022 (السكان حسب العمر والمنطقة والجنسية والجنس)</span><span>· ${r ? 'الهرم يعرض منطقة ' + r : 'اختر منطقة من الخريطة لعرض هرمها'}</span></div></div></div>`);
+  document.getElementById('pyrFilter').onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'pyrCmpBtn') pyrCmp = !pyrCmp; else pyrNat = b.dataset.n; drawPyramid(r); syncClear(); };
+  drawPyramid(r);
+}
 
 function liveHeader() {
   const rl = document.getElementById('regionList'); if (rl && DATA) rl.innerHTML = DATA.regions.map(r => `<button onclick="selectRegion('${r}')">${r}</button>`).join('');
@@ -3178,13 +3363,14 @@ function liveHeader() {
 
 function liveCard(m, r, i, active) {
   const v = mval(m, r);
-  return `<div class="stat live-card ${active ? 'active' : ''}" data-i="${i}"><div class="stat-v">${fmtv(m, v)}</div><div class="stat-l">${m.name}${(!r && m.agg === 'mean') ? ' <small>· متوسط المناطق</small>' : ''}</div><div class="live-meta"><span class="live-dot ${freshClass(m.source_date)}"></span>بيانات <b>${m.period || '—'}</b> · نُشر ${dstr(m.source_date)}</div></div>`;
+  return `<div class="stat live-card ${active ? 'active' : ''}" data-i="${i}"><div class="stat-v">${fmtv(m, v)}</div><div class="stat-l">${m.name}${(!r && m.agg === 'mean') ? ' <small>· متوسط المناطق</small>' : ''}</div>${shareLine(m, r)}<div class="live-meta"><span class="live-dot ${freshClass(m.source_date)}"></span>بيانات <b>${m.period || '—'}</b> · نُشر ${dstr(m.source_date)}${m.pc ? ' · السكان: تعداد 2022' : ''}</div></div>`;
 }
 
 function injectLive(cat, r) {
   if (!LIVE || !LIVE.categories[cat]) return;
   const c0 = LIVE.categories[cat]; const content = document.getElementById('dataContent');
-  const c = { ...c0, metrics: c0.metrics.filter(inYear) };
+  const usePc = perCap && !!PER_CAP[cat];
+  const c = { ...c0, metrics: c0.metrics.filter(inYear).map(m => usePc ? perCapMetric(m) : m) };
   if (yearFilter && !c.metrics.length) { [...content.children].forEach(el => el.style.display = 'none'); content.insertAdjacentHTML('afterbegin', `<div class="live-box"><div class="crumb"><i class="ic" data-ic="${cat}"></i><b>${CAT_NAME[cat] || ''}</b> › <b>${yearFilter}</b></div><div class="live-head"><h3>أحدث البيانات</h3><span>لا مقاييس لسنة ${yearFilter} في هذا القسم</span></div></div>`); paintIcons(); return; }
   if (!c.metrics.length) { content.insertAdjacentHTML('afterbegin', `<div class="crumb"><i class="ic" data-ic="${cat}"></i><b>${CAT_NAME[cat] || ''}</b>${r ? ` › <b>${r}</b>` : ''}</div>`); paintIcons(); return; }
   const f = c.freshness || {};
@@ -3199,42 +3385,45 @@ function injectLive(cat, r) {
     <div id="srcTab" style="display:none"><div class="src-list">${Object.values(srcs).map(x => `<div class="src-item"><div>${x.src}<small>${x.file || ''} · نُشر ${dstr(x.date)} · ${x.metrics.length} مقياساً</small></div>${x.url ? `<a class="btn" href="${x.url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}</div>`).join('')}</div></div>
     <div id="liveTab">
     <div class="live-head"><h3>أحدث البيانات${r ? ' — ' + r : ' — إجمالي المملكة'}</h3><span>${c.metrics.length} مقياساً${yearFilter ? ' · سنة ' + yearFilter : ''} · أحدث نشر ${dstr(f.latest_source_date)} <span class="dl"><button onclick="exportCat('${cat}','csv')">CSV</button><button onclick="exportCat('${cat}','xlsx')">Excel</button></span></span></div>
+    ${PER_CAP[cat] ? `<div class="filter-bar"><label>طريقة العرض:</label><button class="filter-btn ${usePc ? '' : 'active'}" onclick="perCap=false;renderContent()">العدد</button><button class="filter-btn ${usePc ? 'active' : ''}" onclick="perCap=true;renderContent()">لكل 10 آلاف نسمة</button>${usePc ? '<span class="pc-note">المعدل = العدد ÷ سكان المنطقة (تعداد 2022) × 10,000 — يتيح المقارنة بين المناطق بصرف النظر عن حجمها.</span>' : ''}</div>` : ''}
     ${(() => {
       const main = [], groups = [];
-      c.metrics.forEach((m, i) => { if (!m.group) main.push([m, i]); else { let G = groups.find(x => x.g === m.group); if (!G) { G = { g: m.group, items: [] }; groups.push(G); } G.items.push([m, i]); } });
+      const BD = BREAKDOWN[cat]; const bdTotal = BD ? c.metrics.findIndex(m => m.key === BD.total) : -1;
+      const bdKeys = bdTotal >= 0 ? new Set([BD.total, ...BD.parts.flatMap(p => p.keys)]) : new Set();
+      c.metrics.forEach((m, i) => { if (bdKeys.has(m.key)) return; if (!m.group) main.push([m, i]); else { let G = groups.find(x => x.g === m.group); if (!G) { G = { g: m.group, items: [] }; groups.push(G); } G.items.push([m, i]); } });
       const LIM = 8; const extra = main.length > LIM ? main.slice(LIM) : [];
-      let h = `<div id="liveCards"><div class="summary-grid">${main.slice(0, LIM).map(([m, i]) => liveCard(m, r, i, i === main[0][1])).join('')}</div>`;
+      let h = `<div id="liveCards">` + (bdTotal >= 0 ? breakdownHero(c, BD, bdTotal, r) : '') + (main.length ? `<div class="summary-grid">${main.slice(0, LIM).map(([m, i]) => liveCard(m, r, i, bdTotal < 0 && i === main[0][1])).join('')}</div>` : '');
       if (extra.length) h += `<div class="summary-grid more-cards" hidden>${extra.map(([m, i]) => liveCard(m, r, i, false)).join('')}</div><button class="btn more-btn" onclick="const g=this.previousElementSibling; g.hidden=!g.hidden; this.textContent=g.hidden?'عرض ${extra.length} مقاييس أخرى':'إخفاء'; if(!g.hidden) countUp(g);">عرض ${extra.length} مقاييس أخرى</button>`;
-      if (groups.length) h += `<div class="grp-grid">` + groups.map(G => { const vals = G.items.map(([m]) => mval(m, r) || 0); const mx = Math.max(...vals, 1); const sum = vals.reduce((a, b) => a + b, 0);
-        return `<div class="grp-panel"><div class="grp-title">${G.g}</div>${G.items.map(([m, i], k) => { const v = vals[k]; const share = sum && !m.agg ? (v / sum * 100) : null; const label = m.name.replace(/^[^:]+:\s*/, '').replace(/^(سعوديون|غير سعوديين|طلاب|كبار السن|إشراف|إعاقة|شدة|متزوجة\?|لديه إعاقة\?)\s*/, '');
-          return `<div class="grp-row" data-i="${i}"><span class="grp-l" title="${m.name}">${label}</span><span class="grp-bar"><i style="width:${Math.max(2, v / mx * 100)}%"></i></span><b class="grp-v">${fmtv(m, v)}</b><small class="grp-s">${share != null ? share.toFixed(0) + '%' : ''}</small></div>`; }).join('')}<div class="grp-foot">بيانات ${G.items[0][0].period || ''} · اضغطي صفاً لعرضه حسب المناطق</div></div>`; }).join('') + `</div>`;
+      if (groups.length) h += `<div class="grp-grid">` + groups.map(G => groupPanel(G, c, r)).join('') + `</div>`;
       return h + `</div>`; })()}
     <div class="detail-grid"><div class="detail-card full-width"><h3 id="liveChartTitle"></h3><div class="chart-container" style="height:360px"><canvas id="liveChart"></canvas></div><div class="live-src" id="liveSrc"></div></div>
     <div class="detail-card full-width" id="liveSeriesCard" style="display:none"><h3 id="liveSeriesTitle"></h3><div class="chart-container" style="height:280px"><canvas id="liveSeries"></canvas></div></div></div>
     </div></div>`);
   paintIcons(); countUp(content);
-  document.getElementById('liveTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#liveTabs button').forEach(x => x.classList.toggle('on', x === b)); document.getElementById('liveTab').style.display = b.dataset.t === 'live' ? '' : 'none'; const ot = document.getElementById('oldTab'); if (ot) ot.style.display = b.dataset.t === 'old' ? '' : 'none'; document.getElementById('srcTab').style.display = b.dataset.t === 'src' ? '' : 'none'; if (b.dataset.t === 'old') Object.values(charts).forEach(ch => { try { ch.resize(); } catch (e) {} }); };
+  document.getElementById('liveTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#liveTabs button').forEach(x => x.classList.toggle('on', x === b)); document.getElementById('liveTab').style.display = b.dataset.t === 'live' ? '' : 'none'; const ot = document.getElementById('oldTab'); if (ot) ot.style.display = b.dataset.t === 'old' ? '' : 'none'; document.getElementById('srcTab').style.display = b.dataset.t === 'src' ? '' : 'none'; lastTab = { cat, t: b.dataset.t }; syncClear(); if (b.dataset.t === 'old') Object.values(charts).forEach(ch => { try { ch.resize(); } catch (e) {} }); };
   const draw = i => {
     const m = c.metrics[i]; const vals = m.values;
     document.querySelectorAll('#liveCards .live-card').forEach(x => x.classList.toggle('active', +x.dataset.i === i));
     document.querySelectorAll('#liveCards .grp-row').forEach(x => x.classList.toggle('on', +x.dataset.i === i));
-    document.getElementById('liveChartTitle').innerHTML = `${m.name} حسب المناطق <small>· بيانات ${m.period || ''}</small>`;
+    updateHero(c, i, r);
+    document.getElementById('liveChartTitle').innerHTML = `${fullName(m)} حسب المناطق <small>· بيانات ${m.period || ''}${m.pc ? ' · السكان: تعداد 2022' : ''}</small>`;
     const mf = (LIVE.manifest || {})[m.indicator] || {};
     document.getElementById('liveSrc').innerHTML = `<span class="dl"><button onclick="exportMetric('${cat}',${i},'csv')">CSV</button><button onclick="exportMetric('${cat}',${i},'xlsx')">Excel</button></span><span>المصدر: ${m.source}</span><span>· الملف: ${mf.source_file ? decodeURIComponent(mf.source_file).replace(/_fixed_\d+$/, '') : '—'}</span>${m.ref ? `<span>· الموضع: ${m.ref}</span>` : ''}<span>· نُشر ${dstr(m.source_date)} (${freshWord(m.source_date)})</span>${m.source_url ? `<a class="source-link" href="${m.source_url}" target="_blank" rel="noopener">الملف الأصلي</a>` : ''}`;
     const regs = [...LIVE.regions].sort((a, b) => (vals[b] || 0) - (vals[a] || 0));
     if (charts.liveChart) charts.liveChart.destroy();
     charts.liveChart = new Chart(document.getElementById('liveChart'), { type: 'bar', data: { labels: regs, datasets: [{ data: regs.map(x => vals[x] ?? null), backgroundColor: regs.map(x => x === r ? PALETTE[1] : PALETTE[0]), barThickness: 16 }] },
-      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => ' ' + fmtv(m, x.raw) } } }, scales: { x: { ticks: { callback: v => shortNum(v) } }, y: { grid: { display: false }, ticks: { font: { size: 12.5 } } } } } });
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => ' ' + fmtv(m, x.raw) } } }, scales: { x: { ticks: { callback: v => m.pc ? v : shortNum(v) } }, y: { grid: { display: false }, ticks: { font: { size: 12.5 } } } } } });
     const sc = document.getElementById('liveSeriesCard'); if (charts.liveSeries) { charts.liveSeries.destroy(); delete charts.liveSeries; }
     if (m.series) {
       sc.style.display = 'block'; const show = r ? [r] : ['الرياض', 'مكة المكرمة', 'المنطقة الشرقية', 'عسير']; const labels = (m.series[show[0]] || []).map(p => p.period).filter(l => !yearFilter || String(l).includes(yearFilter));
-      document.getElementById('liveSeriesTitle').innerHTML = `${m.name} — السلسلة الزمنية${r ? ' — ' + r : ''} <small>· تُضاف الفترات الجديدة تلقائياً عند نشرها</small>`;
+      document.getElementById('liveSeriesTitle').innerHTML = `${m.name} — السلسلة الزمنية${r ? ' — ' + r : ''}`;
       charts.liveSeries = new Chart(document.getElementById('liveSeries'), { type: 'line', data: { labels, datasets: show.map((rg, i) => ({ label: rg, data: labels.map(l => { const p = (m.series[rg] || []).find(q => q.period === l); return p ? p.value : null; }), borderColor: PALETTE[i], backgroundColor: PALETTE[i] })) },
         options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: show.length > 1, rtl: true } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { ticks: { callback: v => shortNum(v) } } } } });
     } else sc.style.display = 'none';
   };
-  document.getElementById('liveCards').onclick = e => { const el = e.target.closest('.live-card, .grp-row'); if (!el) return; draw(+el.dataset.i); document.querySelectorAll('.grp-row').forEach(x => x.classList.toggle('on', x === el)); };
+  document.getElementById('liveCards').onclick = e => { const el = e.target.closest('.live-card, .grp-row, .bd-pick'); if (!el) return; draw(+el.dataset.i); metricPicked = true; syncClear(); document.querySelectorAll('.grp-row').forEach(x => x.classList.toggle('on', x === el)); };
   draw(0);
+  if (lastTab.cat === cat && lastTab.t !== 'live') { const tb = document.querySelector(`#liveTabs button[data-t="${lastTab.t}"]`); if (tb) tb.click(); }
 }
 
 function renderMethodology() {
@@ -3285,7 +3474,7 @@ function buildSearch() {
   QIDX = [];
   DATA.regions.forEach(r => QIDX.push({ t: 'منطقة', l: r, go: () => selectRegion(r) }));
   Object.entries(CAT_NAME).forEach(([k, n]) => QIDX.push({ t: 'قسم', l: n, go: () => selectCategory(k) }));
-  Object.entries(LIVE.categories).forEach(([k, c]) => c.metrics.forEach((m, i) => QIDX.push({ t: CAT_NAME[k] || k, l: m.name, sub: m.period || '', go: () => { selectCategory(k); setTimeout(() => { const el = document.querySelector(`#liveCards .live-card[data-i="${i}"]`); if (el) { el.click(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1700); } }, 250); } })));
+  Object.entries(LIVE.categories).forEach(([k, c]) => c.metrics.forEach((m, i) => QIDX.push({ t: CAT_NAME[k] || k, l: m.name, sub: m.period || '', go: () => { selectCategory(k); setTimeout(() => { const el = document.querySelector(`#liveCards .live-card[data-i="${i}"], #liveCards .grp-row[data-i="${i}"], #liveCards .bd-row[data-i="${i}"], #liveCards .bd-total[data-i="${i}"]`); if (el) { el.click(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1700); } }, 250); } })));
   const q = document.getElementById('q'), res = document.getElementById('qRes'); if (!q) return;
   const norm = x => String(x).replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').toLowerCase();
   const show = () => { const v = norm(q.value.trim()); if (!v) { res.hidden = true; return; } const hits = QIDX.filter(x => norm(x.l).includes(v) || norm(x.t).includes(v)).slice(0, 12); qSel = -1; res.innerHTML = hits.map((h, i) => `<div data-i="${i}"><span>${h.l}${h.sub ? ` <small>· ${h.sub}</small>` : ''}</span><small>${h.t}</small></div>`).join('') || '<div><small>لا نتائج</small></div>'; res.hidden = false; res._hits = hits; };
@@ -3325,10 +3514,10 @@ function metricRows(cat, i) {
 function toCSV(head, rows) { const esc = v => { const t = String(v ?? ''); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; }; return '﻿' + [head, ...rows].map(r => r.map(esc).join(',')).join('\r\n'); }
 function saveBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800); }
 function stamp() { return new Date().toISOString().slice(0, 10); }
-function withXLSX(fn) { if (window.XLSX) return fn(); const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; sc.onload = fn; sc.onerror = () => alert('تعذّر تحميل مكتبة Excel (يلزم اتصال بالإنترنت). استخدمي CSV.'); document.head.appendChild(sc); }
+function withXLSX(fn) { if (window.XLSX) return fn(); const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; sc.onload = fn; sc.onerror = () => alert('تعذّر تحميل مكتبة Excel (يلزم اتصال بالإنترنت). استخدم CSV.'); document.head.appendChild(sc); }
 function sheetName(n) { return String(n).replace(/[\\/?*\[\]:]/g, ' ').slice(0, 31) || 'Sheet'; }
 function exportCat(cat, fmt) {
-  const d = catRows(cat); if (!d) { alert('اختاري قسماً من المؤشرات الحيّة أولاً'); return; }
+  const d = catRows(cat); if (!d) { alert('اختر قسماً من المؤشرات الحيّة أولاً'); return; }
   const fname = `${d.name} - ${stamp()}`;
   if (fmt === 'csv') return saveBlob(new Blob([toCSV(d.head, d.rows)], { type: 'text/csv;charset=utf-8' }), fname + '.csv');
   withXLSX(() => { const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet([d.head, ...d.rows]); ws['!views'] = [{ RTL: true }]; XLSX.utils.book_append_sheet(wb, ws, sheetName(d.name)); XLSX.writeFile(wb, fname + '.xlsx'); });
